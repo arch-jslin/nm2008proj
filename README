@@ -1,0 +1,30 @@
+This is a little project that we are preparing for the nightmarket 2008 gathering.
+For the information regarding nightmarket 2008, please visit http://www.nightmarket.org
+
+This project is a little game about the Losheng Sanatorium, and about what is happening 
+to this region including the people still living in the Sanatorium. We are trying to
+use this game as a medium to draw the public attention in a fun and interactive way,
+and make people (who still don't know the incident in the Losheng Sanatorium) to 
+reflect on themselves, "Are we (the public) doing the right thing to them?"
+
+Please check out this article on the wikipedia to learn more about the topic:
+    http://en.wikipedia.org/wiki/Losheng_Sanatorium
+    
+    
+Technical Issue -
+  This project runs on Flash 9 (written in ActionScript 3)
+  What we will be using in this little game is:
+    * Papervision3D svn                               - http://blog.papervision3d.org
+    * TweenMax                                        - http://www.TweenMax.com
+    * WiiFlash svn (and of course wiimote & nunchunk) - http://www.wiiflash.org
+    
+  This is a very small game and will be finished in a few days, but nevertheless
+  it'll make some use of these great as3 libraries. Many thanks to these extremely 
+  brilliant and generous people who implemented all the open source libraries.
+  
+Best regards,
+                             Project Lead  K TU         (ktu219@gmail.com)
+                             Implementor   arch.jslin   (archilifelin@yahoo.com.tw)
+                             And supporters from "YET"  (http://blog.yam.com/yetank)
+
+  
