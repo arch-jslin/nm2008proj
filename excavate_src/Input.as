@@ -44,6 +44,9 @@ class Input implements IEventDispatcher
     private var diry_            : Number;
     private var keyStats_        : Array;
     
+    private var DIRX_CALIBRATION : Number = -0.08;
+    private var DIRY_CALIBRATION : Number = -0.09;
+    
     //Getter | Setter
     public function get dirX():Number { return dirx_; }
     public function get dirY():Number { return diry_; }
@@ -52,7 +55,7 @@ class Input implements IEventDispatcher
     public function Input(stage: Stage) {
         eventDispatcher_ = new EventDispatcher(this);
         wiimote_         = new Wiimote();
-        peakDetector_    = new HistoryPeakDetection();
+        peakDetector_    = new HistoryPeakDetection(8, 128, 2);
         keyStats_        = new Array(256);
         hookupEvents(stage);
         wiimote_.connect();
@@ -63,7 +66,7 @@ class Input implements IEventDispatcher
             dirx_ = diry_ = 0;
         }
         dirx_ += 0.7 * ((-1)*int(keyStats_[65]) + int(keyStats_[68])); //KEY_A and KEY_D
-        diry_ += 0.7 * ((-1)*int(keyStats_[87]) + int(keyStats_[83])); //KEY_W and KEY_S
+        diry_ += 0.7 * ((-1)*int(keyStats_[83]) + int(keyStats_[87])); //KEY_W and KEY_S
     }
     
     private function hookupEvents(stage: Stage):void {
@@ -79,14 +82,21 @@ class Input implements IEventDispatcher
             } ); 
         
         peakDetector_.addEventListener( PeakEvent.PEAK, 
-            function() { eventDispatcher_.dispatchEvent( new PeakEvent() ); } );
+            function() { 
+                var sqY:Number = (wiimote_.sensorY * wiimote_.sensorY);
+                var sqZ:Number = (wiimote_.sensorZ * wiimote_.sensorZ);
+                //trace( sqY + sqZ );
+                if( sqY + sqZ > 17 ) //Enforce a minimum force requirement to trigger a PEAK
+                    eventDispatcher_.dispatchEvent( new PeakEvent() ); 
+            } );
             
         wiimote_.addEventListener( WiimoteEvent.UPDATE,
             function(e:WiimoteEvent) {
-                peakDetector_.addValue( e.target.sensorY );
-                if( e.target.hasNunchuk ) {
-                    dirx_ = e.target.nunchuk.stickX;
-                    diry_ = e.target.nunchuk.stickY;
+                peakDetector_.addValue( wiimote_.sensorY + wiimote_.sensorZ );
+                //trace( wiimote_.sensorZ );
+                if( wiimote_.hasNunchuk ) {
+                    dirx_ = wiimote_.nunchuk.stickX + DIRX_CALIBRATION;
+                    diry_ = wiimote_.nunchuk.stickY + DIRY_CALIBRATION;
                 }
             } );
     }
