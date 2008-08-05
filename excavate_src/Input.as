@@ -42,6 +42,7 @@ class Input implements IEventDispatcher
     private var eventDispatcher_ : EventDispatcher;
     private var dirx_            : Number;
     private var diry_            : Number;
+    private var keyStats_        : Array;
     
     //Getter | Setter
     public function get dirX():Number { return dirx_; }
@@ -52,20 +53,37 @@ class Input implements IEventDispatcher
         eventDispatcher_ = new EventDispatcher(this);
         wiimote_         = new Wiimote();
         peakDetector_    = new HistoryPeakDetection();
+        keyStats_        = new Array(256);
         hookupEvents(stage);
         wiimote_.connect();
     }
     
+    public function update():void {
+        if( !wiimote_.connected || !wiimote_.hasNunchuk ) { 
+            dirx_ = diry_ = 0;
+        }
+        dirx_ += 0.7 * ((-1)*int(keyStats_[65]) + int(keyStats_[68])); //KEY_A and KEY_D
+        diry_ += 0.7 * ((-1)*int(keyStats_[87]) + int(keyStats_[83])); //KEY_W and KEY_S
+    }
+    
     private function hookupEvents(stage: Stage):void {
-        stage.addEventListener( KeyboardEvent.KEY_DOWN, function(){} ); // we need a keystate[];
-        stage.addEventListener( KeyboardEvent.KEY_UP,   function(){} ); // we need a keystate[];
+        stage.addEventListener( KeyboardEvent.KEY_DOWN, 
+            function(k:KeyboardEvent){
+                keyStats_[k.keyCode] = true;
+                if( k.keyCode == 32 ) //WHITE_SPACE
+                    eventDispatcher_.dispatchEvent( new PeakEvent() );
+            } ); 
+        stage.addEventListener( KeyboardEvent.KEY_UP, 
+            function(k:KeyboardEvent){
+                keyStats_[k.keyCode] = false;
+            } ); 
         
         peakDetector_.addEventListener( PeakEvent.PEAK, 
             function() { eventDispatcher_.dispatchEvent( new PeakEvent() ); } );
             
         wiimote_.addEventListener( WiimoteEvent.UPDATE,
             function(e:WiimoteEvent) {
-                peakDetector_.addValue( e.target.sensorX + e.target.sensorY + e.target.sensorZ );
+                peakDetector_.addValue( e.target.sensorY );
                 if( e.target.hasNunchuk ) {
                     dirx_ = e.target.nunchuk.stickX;
                     diry_ = e.target.nunchuk.stickY;

@@ -28,15 +28,46 @@ import flash.events.*;
 import flash.geom.*;
 import flash.utils.*;
 import flash.ui.*;
+import flash.text.*;
+
+//import PeakDetection
+import org.wiiflash.events.PeakEvent;
 
 public final class ExcavateGame extends Sprite 
 {
     //Properties
-    private var input_ : Input;
+    private var input_     : Input;
+    private var peakCount_ : uint;
+    
+    //Stage objects
+    public var showDirX_  : TextField;
+    public var showDirY_  : TextField;
+    public var showCount_ : TextField;
     
     //Methods
     public function ExcavateGame() {
+        showDirX_  = new TextField();
+        showDirY_  = new TextField();
+        showCount_ = new TextField();
+        showDirX_.x = 10; showDirX_.y = 10;
+        showDirY_.x = 10; showDirY_.y = 30;
+        showCount_.x = 10; showCount_.y = 50; 
+        peakCount_ = 0;
         input_ = new Input(stage);
+        input_.addEventListener(PeakEvent.PEAK, 
+            function(){  
+                peakCount_ += 1;
+                showCount_.text = peakCount_.toString();
+            } );
+        addEventListener(Event.ENTER_FRAME, 
+            function(){ 
+                input_.update();
+                showDirX_.text = input_.dirX.toString();
+                showDirY_.text = input_.dirY.toString();
+            } );
+        addChild( showDirX_ );
+        addChild( showDirY_ );
+        addChild( showCount_ );
     }
 }
 
