@@ -39,21 +39,25 @@ public final class ExcavateGame extends Sprite
     private var input_     : Input;
     private var peakCount_ : uint;
     
-    //Stage objects
+    //Stage objects (Debug)
     public var showDirX_  : TextField;
     public var showDirY_  : TextField;
     public var showCount_ : TextField;
     
     //Methods
     public function ExcavateGame() {
+        input_ = new Input(stage);
+        peakCount_ = 0;
+        showDebug();
+    }
+    
+    private function showDebug():void {
         showDirX_  = new TextField();
         showDirY_  = new TextField();
         showCount_ = new TextField();
         showDirX_.x = 10; showDirX_.y = 10;
         showDirY_.x = 10; showDirY_.y = 30;
         showCount_.x = 10; showCount_.y = 50; 
-        peakCount_ = 0;
-        input_ = new Input(stage);
         input_.addEventListener(PeakEvent.PEAK, 
             function(){  
                 peakCount_ += 1;
