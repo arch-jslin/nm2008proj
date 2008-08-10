@@ -37,12 +37,12 @@ import org.wiiflash.utils.*;
 class Input implements IEventDispatcher
 {
     //Properties
-    private var wiimote_         : Wiimote;
-    private var peakDetector_    : HistoryPeakDetection;
+    private var wiimote_         : Wiimote = new Wiimote();
+    private var peakDetector_    : HistoryPeakDetection = new HistoryPeakDetection(8, 128, 2);
     private var eventDispatcher_ : EventDispatcher;
-    private var dirx_            : Number;
-    private var diry_            : Number;
-    private var keyStats_        : Array;
+    private var dirx_            : Number = 0;
+    private var diry_            : Number = 0;
+    private var keyStats_        : Array = new Array(256);
     
     private var DIRX_CALIBRATION : Number = -0.08;
     private var DIRY_CALIBRATION : Number = -0.09;
@@ -54,9 +54,6 @@ class Input implements IEventDispatcher
     //Methods
     public function Input(stage: Stage) {
         eventDispatcher_ = new EventDispatcher(this);
-        wiimote_         = new Wiimote();
-        peakDetector_    = new HistoryPeakDetection(8, 128, 2);
-        keyStats_        = new Array(256);
         hookupEvents(stage);
         wiimote_.connect();
     }
