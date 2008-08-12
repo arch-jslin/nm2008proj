@@ -48,7 +48,7 @@ public final class ExcavateGame extends Sprite
     
     private function mainLoop(e:Event):void {
         input_.update();
-        world_.singleRender();
+        world_.update();
     }
     
     // ------------------------------------------------------------------ Debug
@@ -57,23 +57,28 @@ public final class ExcavateGame extends Sprite
     private var showDirX_  : TextField;
     private var showDirY_  : TextField;
     private var showCount_ : TextField;
+    private var showPro_   : TextField;
     
     private function showDebug():void {
         showDirX_ = new TextField();
         showDirY_ = new TextField();
         showCount_= new TextField();
+        showPro_  = new TextField();
         showDirX_.x = 10; showDirX_.y = 10;
         showDirY_.x = 10; showDirY_.y = 30;
         showCount_.x = 10; showCount_.y = 50; 
+        showPro_.x = 10; showPro_.y = 70; 
         addEventListener(Event.ENTER_FRAME, 
             function(){ 
                 showCount_.text = world_.peakCount.toString();
                 showDirX_.text = input_.dirX.toString();
                 showDirY_.text = input_.dirY.toString();
+                showPro_.text = world_.progress.toString();
             } );
         addChild( showDirX_ );
         addChild( showDirY_ );
         addChild( showCount_ );
+        addChild( showPro_ );
     }
 }
 
