@@ -49,43 +49,42 @@ import org.papervision3d.events.*;
 //Import PeakDetection
 import org.wiiflash.events.PeakEvent;
 
-class World extends Sprite
+class World extends BasicView
 {
     //Internal Properties
     private var input_     : Input;
     private var peakCount_ : uint   = 0;
+    private var progress_  : Number = 0;
     
     //3D Related
-	private var view_      : BasicView       = new BasicView(800, 600, false, true, "Target");
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
     
     //getter | setter
     public function get peakCount():uint { return peakCount_; }
+    public function get progress():Number{ return progress_; }
     
     //methods
     public function World(input: Input):void {
+        super(800, 600, false, true, "Target");
         input_ = input;
         setup3D();
         setupEvents();
     }
     
-    public function render():void {
-        view_.renderer.renderScene( view_.scene, view_.camera, view_.viewport );
-    }
-    
     private function setup3D():void {
-    	view_.viewport.autoClipping = true;
-		view_.viewport.autoCulling  = true;
+    	viewport.autoClipping = true;
+		viewport.autoCulling  = true;
         
         // Create camera
-		view_.camera.zoom = 6;
-		view_.camera.focus = 70;
-        view_.camera.x = 0;
-		view_.camera.y = 0;
-		view_.camera.z = -1000;
-		view_.camera.target = sight_;
+		camera.zoom = 6;
+		camera.focus = 70;
+        camera.x = 0;
+		camera.y = 0;
+		camera.z = -1000;
+		camera.target = sight_;
         
-        addChild(view_);
+        //test
+        scene.addChild(new Plane(new ColorMaterial()));
     }
     
     private function setupEvents():void {

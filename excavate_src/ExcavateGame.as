@@ -41,13 +41,14 @@ public final class ExcavateGame extends Sprite
     public function ExcavateGame() {
         input_ = new Input(stage);
         world_ = new World(input_);
+        addChild(world_);
         showDebug();
         addEventListener( Event.ENTER_FRAME, mainLoop );
     }
     
     private function mainLoop(e:Event):void {
         input_.update();
-        world_.render();
+        world_.singleRender();
     }
     
     // ------------------------------------------------------------------ Debug
