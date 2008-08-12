@@ -55,13 +55,19 @@ class World extends BasicView
     private var input_     : Input;
     private var peakCount_ : uint   = 0;
     private var progress_  : Number = 0;
+    private var spawnGap_  : Number = 100;
+    private var nextSpawnP_: Number = spawnGap_;
+    private var objZStart_ : Number = 500;
+    private var objZEnd_   : Number = -500;
     
     //3D Related
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
+    private var objArray_  : Array = new Array(); //contains DisplayObject3D
     
     //getter | setter
     public function get peakCount():uint { return peakCount_; }
     public function get progress():Number{ return progress_; }
+    public function get nextSpawnP():Number{ return nextSpawnP_; }
     
     //methods
     public function World(input: Input):void {
@@ -69,6 +75,56 @@ class World extends BasicView
         input_ = input;
         setup3D();
         setupEvents();
+        initSpawn();
+    }
+    
+    public function update():void {
+        progress_ += convert_InputY_2_Progress();
+        
+        if( progress_ >= nextSpawnP_ ) {
+            spawnObject();
+            nextSpawnP_ = progress_ + spawnGap_;
+        }
+        updateObjPositions();
+        cleanUpObjects();
+        
+        singleRender();
+    }
+    
+    private function convert_InputY_2_Progress():Number {
+        return input_.dirY > 0 ? input_.dirY * 10 : 0;
+    }
+    
+    private function spawnObject():void {
+        var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 300, 300, 1, 1); //temp
+        o.extra = {hp: 3};
+        o.x = rand2(500) + camera.x;
+        o.z = objZStart_;
+        objArray_.push( o );
+        scene.addChild( o );
+    }
+    
+    private function initSpawn():void {
+        var len: uint = Math.abs( objZEnd_ - objZStart_ ); 
+        var times: uint = len / spawnGap_;
+        for( var i:uint = 0; i < times; ++i ) {
+            spawnObject(); //must spawn first or you can't access objArray_[i]
+            objArray_[i].z -= len * (1 - (i+1)/times);
+        }
+    }
+    
+    private function updateObjPositions():void {
+        for each( var o in objArray_ ) {
+            o.z -= convert_InputY_2_Progress();
+        }
+        camera.x += input_.dirX * 10;
+        sight_.x += input_.dirX * 10;
+    }
+    
+    private function cleanUpObjects():void {
+        while( objArray_[0] && objArray_[0].z < objZEnd_ ) {
+            scene.removeChild( objArray_.shift() );
+        }
     }
     
     private function setup3D():void {
@@ -82,9 +138,6 @@ class World extends BasicView
 		camera.y = 0;
 		camera.z = -1000;
 		camera.target = sight_;
-        
-        //test
-        scene.addChild(new Plane(new ColorMaterial()));
     }
     
     private function setupEvents():void {
