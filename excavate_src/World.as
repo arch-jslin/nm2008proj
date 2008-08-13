@@ -70,6 +70,7 @@ class World extends BasicView
     //3D Related
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
+    private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
     
     //getter | setter
@@ -102,12 +103,12 @@ class World extends BasicView
         
         //test
         //trace( (objArray_[0].screen.x + stage.width/2) + " " + (objArray_[0].screen.y + stage.height/2) );
-        //trace( isBlocked() );
+        trace( isBlockedCache_ );
     }
     
     private function isBlocked():Boolean {
         for( var i:uint = 0 ; i < objsPerSpawn_; ++i ) 
-            if ( objArray_[i].hitTestObject(blocker_) )
+            if ( !objArray_[i].extra["isDead"] && objArray_[i].hitTestObject(blocker_) )
                 return true;
         return false;
     }
@@ -128,7 +129,7 @@ class World extends BasicView
     private function spawnObjects():void {
         for( var i:uint = 0; i < objsPerSpawn_; ++i ) {
             var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 300, 300, 4, 4); //temp
-            o.extra = {hp: 3}; 
+            o.extra = {hp: 3, isDead: false}; 
             o.autoCalcScreenCoords = true;
             
             //Magical formula....
@@ -160,9 +161,11 @@ class World extends BasicView
         camera.x += input_.dirX * 10;
         sight_.x += input_.dirX * 10;
         blocker_.x += input_.dirX * 10;
+        hitarea_.x += input_.dirX * 10;
         camera.y = convert_X_2_Height(camera.x);
         sight_.y = convert_X_2_Height(sight_.x);
         blocker_.y = convert_X_2_Height(blocker_.x);
+        hitarea_.y = convert_X_2_Height(hitarea_.x) - 50; //Magical 50 ...
     }
     
     private function cleanUpObjects():void {
@@ -184,14 +187,34 @@ class World extends BasicView
 		camera.target = sight_;
         
         blocker_.z = -1000;
+        hitarea_.z = -1100;  //Strange situation.
         scene.addChild( blocker_ );
+        scene.addChild( hitarea_ );
     }
     
     private function setupEvents():void {
         input_.addEventListener(PeakEvent.PEAK, 
             function(){  
                 peakCount_ += 1;
+                hitReaction( findHitObject() );
             } );
+    }
+    
+    private function findHitObject():DisplayObject3D {
+        var hitobj: DisplayObject3D = null;
+        for( var i:uint = 0; i < objArray_.length; ++i )
+            if( !objArray_[i].extra["isDead"] && objArray_[i].hitTestObject(hitarea_) ) {
+                hitobj = objArray_[i]; 
+                break;
+            }
+        return hitobj;
+    }
+    
+    private function hitReaction(obj: DisplayObject3D):void {
+        if( obj == null ) return;
+        trace( "hit" );
+        obj.extra["isDead"] = true;
+        scene.removeChild( obj );
     }
     
 	// ------------------------------------------------------------------ Helper
