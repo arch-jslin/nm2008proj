@@ -63,8 +63,13 @@ class World extends BasicView
     private var xInterval_ : Number = 500;
     private var yInterval_ : Number = 200;
     
+    //caches
+    private var currentFrameProgressCache_ : Number = 0;
+    private var isBlockedCache_            : Boolean = false;
+    
     //3D Related
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
+    private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
     
     //getter | setter
@@ -82,7 +87,9 @@ class World extends BasicView
     }
     
     public function update():void {
-        progress_ += convert_InputY_2_Progress();
+        isBlockedCache_            = isBlocked();
+        currentFrameProgressCache_ = isBlockedCache_ ? 0 : convert_InputY_2_Progress();
+        progress_ += currentFrameProgressCache_;
         
         if( progress_ >= nextSpawnP_ ) {
             spawnObjects();
@@ -92,10 +99,17 @@ class World extends BasicView
         cleanUpObjects();
         
         singleRender();
+        
+        //test
+        //trace( (objArray_[0].screen.x + stage.width/2) + " " + (objArray_[0].screen.y + stage.height/2) );
+        //trace( isBlocked() );
     }
     
     private function isBlocked():Boolean {
-        
+        for( var i:uint = 0 ; i < objsPerSpawn_; ++i ) 
+            if ( objArray_[i].hitTestObject(blocker_) )
+                return true;
+        return false;
     }
     
     private function convert_InputY_2_Progress():Number {
@@ -114,12 +128,13 @@ class World extends BasicView
     private function spawnObjects():void {
         for( var i:uint = 0; i < objsPerSpawn_; ++i ) {
             var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 300, 300, 4, 4); //temp
-            o.extra = {hp: 3};
+            o.extra = {hp: 3}; 
+            o.autoCalcScreenCoords = true;
             
             //Magical formula....
             o.x = ( 2*i - objsPerSpawn_ ) * xInterval_ + rand(xInterval_ * 2) + camera.x;
             
-            o.z = objZStart_ + rand2(10);
+            o.z = objZStart_ + i*2; //i is a little bias to avoid z-fighting
             o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
             o.rotationZ = rand2(20);
             objArray_.push( o );
@@ -133,19 +148,21 @@ class World extends BasicView
         for( var i:uint = 0; i < times; ++i ) {
             spawnObjects(); //must spawn first or you can't access objArray_[i]
             for( var j:uint = 0; j < objsPerSpawn_; ++j ) 
-                objArray_[j + (i*objsPerSpawn_)].z -= len * (1 - (i+1)/times); //Nagical Indexes..
+                objArray_[j + (i*objsPerSpawn_)].z -= len * (1 - (i+1)/times); //Magical Indexes..
         }
     }
     
     private function updateObjPositions():void {
         for each( var o in objArray_ ) {
-            o.z -= convert_InputY_2_Progress();
+            o.z -= currentFrameProgressCache_;
             o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
         }
         camera.x += input_.dirX * 10;
         sight_.x += input_.dirX * 10;
+        blocker_.x += input_.dirX * 10;
         camera.y = convert_X_2_Height(camera.x);
         sight_.y = convert_X_2_Height(sight_.x);
+        blocker_.y = convert_X_2_Height(blocker_.x);
     }
     
     private function cleanUpObjects():void {
@@ -165,6 +182,9 @@ class World extends BasicView
 		camera.y = 0;
 		camera.z = -1250;
 		camera.target = sight_;
+        
+        blocker_.z = -1000;
+        scene.addChild( blocker_ );
     }
     
     private function setupEvents():void {
