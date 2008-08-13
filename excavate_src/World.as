@@ -49,6 +49,10 @@ import org.papervision3d.events.*;
 //Import PeakDetection
 import org.wiiflash.events.PeakEvent;
 
+//Import TweenMaxAS3
+import gs.TweenMax;
+import gs.easing.Elastic;
+
 class World extends BasicView
 {
     //Internal Properties
@@ -71,6 +75,7 @@ class World extends BasicView
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
     private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
+    private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground.png"), 3000, 1000, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
     
     //getter | setter
@@ -156,7 +161,8 @@ class World extends BasicView
     private function updateObjPositions():void {
         for each( var o in objArray_ ) {
             o.z -= currentFrameProgressCache_;
-            o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
+            if( !o.extra["isDead"] )
+                o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
         }
         camera.x += input_.dirX * 10;
         sight_.x += input_.dirX * 10;
@@ -188,8 +194,11 @@ class World extends BasicView
         
         blocker_.z = -1000;
         hitarea_.z = -1100;  //Strange situation.
+        ground_.y = convert_X_2_Height(ground_.x);
+        ground_.z = -300;
         scene.addChild( blocker_ );
         scene.addChild( hitarea_ );
+        scene.addChild( ground_ );
     }
     
     private function setupEvents():void {
@@ -214,7 +223,7 @@ class World extends BasicView
         if( obj == null ) return;
         trace( "hit" );
         obj.extra["isDead"] = true;
-        scene.removeChild( obj );
+        TweenMax.to(obj, 1, {y:"-400", ease:Elastic.easeIn, overwrite:false, onComplete:function(){scene.removeChild( obj );}});        
     }
     
 	// ------------------------------------------------------------------ Helper
