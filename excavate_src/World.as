@@ -69,13 +69,14 @@ class World extends BasicView
     
     //caches
     private var currentFrameProgressCache_ : Number = 0;
+    private var currentFrameXCache_        : Number = 0;
     private var isBlockedCache_            : Boolean = false;
     
     //3D Related
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
     private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
-    private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground.png"), 3000, 1000, 1, 1);
+    private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 4500, 1400, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
     
     //getter | setter
@@ -95,6 +96,7 @@ class World extends BasicView
     public function update():void {
         isBlockedCache_            = isBlocked();
         currentFrameProgressCache_ = isBlockedCache_ ? 0 : convert_InputY_2_Progress();
+        currentFrameXCache_        = convert_InputX_2_XMovement();
         progress_ += currentFrameProgressCache_;
         
         if( progress_ >= nextSpawnP_ ) {
@@ -118,6 +120,12 @@ class World extends BasicView
         return false;
     }
     
+    private function convert_InputX_2_XMovement():Number {
+        if( camera.x < -2 * xInterval_ && input_.dirX < 0 ) return 0;
+        if( camera.x > 2 * xInterval_ && input_.dirX > 0 ) return 0;
+        return input_.dirX * 10;
+    }
+    
     private function convert_InputY_2_Progress():Number {
         return input_.dirY > 0 ? input_.dirY * 10 : 0;
     }
@@ -131,6 +139,10 @@ class World extends BasicView
         return Math.cos((z / -objZEnd_) * Math.PI/2) * yInterval_ * 2 - (yInterval_/2);
     }
     
+    private function calculate_Slope_By_X_Pos(x:Number):Number {
+        return 0;
+    }
+    
     private function spawnObjects():void {
         for( var i:uint = 0; i < objsPerSpawn_; ++i ) {
             var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 300, 300, 4, 4); //temp
@@ -142,7 +154,7 @@ class World extends BasicView
             
             o.z = objZStart_ + i*2; //i is a little bias to avoid z-fighting
             o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
-            o.rotationZ = rand2(20);
+            o.rotationZ = calculate_Slope_By_X_Pos(o.x);//rand2(20);
             objArray_.push( o );
             scene.addChild( o );
         }
@@ -164,10 +176,10 @@ class World extends BasicView
             if( !o.extra["isDead"] )
                 o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
         }
-        camera.x += input_.dirX * 10;
-        sight_.x += input_.dirX * 10;
-        blocker_.x += input_.dirX * 10;
-        hitarea_.x += input_.dirX * 10;
+        camera.x += currentFrameXCache_;
+        sight_.x += currentFrameXCache_;
+        blocker_.x += currentFrameXCache_;
+        hitarea_.x += currentFrameXCache_;
         camera.y = convert_X_2_Height(camera.x);
         sight_.y = convert_X_2_Height(sight_.x);
         blocker_.y = convert_X_2_Height(blocker_.x);
@@ -194,7 +206,7 @@ class World extends BasicView
         
         blocker_.z = -1000;
         hitarea_.z = -1100;  //Strange situation.
-        ground_.y = convert_X_2_Height(ground_.x);
+        ground_.y = convert_X_2_Height(ground_.x) - 500;
         ground_.z = -300;
         scene.addChild( blocker_ );
         scene.addChild( hitarea_ );
