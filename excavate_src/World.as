@@ -140,7 +140,7 @@ class World extends BasicView
     }
     
     private function calculate_Slope_By_X_Pos(x:Number):Number {
-        return 0;
+        return -(Math.PI/6) * Math.sin((x / xInterval_) * Math.PI/2) * (180/Math.PI);
     }
     
     private function spawnObjects():void {
@@ -207,7 +207,7 @@ class World extends BasicView
         blocker_.z = -1000;
         hitarea_.z = -1100;  //Strange situation.
         ground_.y = convert_X_2_Height(ground_.x) - 500;
-        ground_.z = -300;
+        ground_.z = 0;
         scene.addChild( blocker_ );
         scene.addChild( hitarea_ );
         scene.addChild( ground_ );
