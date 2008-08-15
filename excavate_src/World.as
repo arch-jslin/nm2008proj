@@ -66,6 +66,8 @@ class World extends BasicView
     private var objZEnd_   : Number = -700;
     private var xInterval_ : Number = 500;
     private var yInterval_ : Number = 200;
+	private var houseVariations_ : Number = 12;
+	private var inited_    : Boolean = false;
     
     //caches
     private var currentFrameProgressCache_ : Number = 0;
@@ -79,6 +81,7 @@ class World extends BasicView
     private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 4500, 1400, 1, 1);
 	private var ground2_   : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 4500, 1400, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
+	private var matArray_  : Array = new Array(); //contains BitmapFileMaterial
     
     //getter | setter
     public function get peakCount():uint { return peakCount_; }
@@ -89,10 +92,18 @@ class World extends BasicView
     public function World(input: Input):void {
         super(800, 600, false, true, "Target");
         input_ = input;
+		initBitmapMaterials();
         setup3D();
         setupEvents();
-        initSpawn();
+        //initSpawn();
     }
+	
+	public function initBitmapMaterials():void {
+	    for( var i:uint = 0; i < houseVariations_ ; ++i )
+		    matArray_.push( new BitmapFileMaterial("png/house"+uint_to_s(i,2)+".png") );
+			
+	    BitmapFileMaterial.callback = initSpawn;
+	}
     
     public function update():void {
         isBlockedCache_            = isBlocked();
@@ -115,6 +126,7 @@ class World extends BasicView
     }
     
     private function isBlocked():Boolean {
+	    if( inited_ == false ) return true;
         for( var i:uint = 0 ; i < objsPerSpawn_; ++i ) 
             if ( !objArray_[i].extra["isDead"] && objArray_[i].hitTestObject(blocker_) )
                 return true;
@@ -146,7 +158,10 @@ class World extends BasicView
     
     private function spawnObjects():void {
         for( var i:uint = 0; i < objsPerSpawn_; ++i ) {
-            var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 300, 300, 4, 4); //temp
+            var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 450, 300, 4, 4); //temp
+			//var mat: BitmapFileMaterial = matArray_[uint_rand(houseVariations_)];
+			//var o: Plane = new Plane(mat, mat.bitmap.width/1.2, mat.bitmap.height/1.2, 1, 1);
+			
             o.extra = {hp: 3, isDead: false}; 
             o.autoCalcScreenCoords = true;
             
@@ -169,6 +184,7 @@ class World extends BasicView
             for( var j:uint = 0; j < objsPerSpawn_; ++j ) 
                 objArray_[j + (i*objsPerSpawn_)].z -= len * (1 - (i+1)/times); //Magical Indexes..
         }
+		inited_ = true;
     }
     
     private function updateObjPositions():void {
@@ -245,8 +261,21 @@ class World extends BasicView
 	// ------------------------------------------------------------------ Helper
 
 	protected function rand(i:Number):Number  { return Math.random()*i; }
+	protected function uint_rand(i:uint):uint { return rand(i); }
 	protected function rand2(i:Number):Number { return rand(i)*2 - i; }
-    
+	protected function uint_to_s(i:uint, digit:uint = 0):String {
+	    if( digit == 0 ) return i.toString();
+		else {
+		    var s:String = i.toString();
+			var lack_zero:uint = digit - s.length;
+			var zeros:String = "";
+			while( lack_zero > 0 ) {
+			    zeros += "0";
+				--lack_zero;
+			}
+			return zeros + s;
+		}
+	}
 }
 
 }//package
