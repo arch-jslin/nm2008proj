@@ -62,8 +62,8 @@ class World extends BasicView
     private var spawnGap_  : Number = 100;
     private var nextSpawnP_: Number = spawnGap_;
     private var objsPerSpawn_: uint = 3;
-    private var objZStart_ : Number = 0;
-    private var objZEnd_   : Number = -1000;
+    private var objZStart_ : Number = 300;
+    private var objZEnd_   : Number = -700;
     private var xInterval_ : Number = 500;
     private var yInterval_ : Number = 200;
     
@@ -77,6 +77,7 @@ class World extends BasicView
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
     private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
     private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 4500, 1400, 1, 1);
+	private var ground2_   : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 4500, 1400, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
     
     //getter | setter
@@ -110,7 +111,7 @@ class World extends BasicView
         
         //test
         //trace( (objArray_[0].screen.x + stage.width/2) + " " + (objArray_[0].screen.y + stage.height/2) );
-        trace( isBlockedCache_ );
+        //trace( isBlockedCache_ );
     }
     
     private function isBlocked():Boolean {
@@ -201,16 +202,19 @@ class World extends BasicView
 		camera.focus = 70;
         camera.x = 0;
 		camera.y = 0;
-		camera.z = -1250;
+		camera.z = -950;
 		camera.target = sight_;
         
-        blocker_.z = -1000;
-        hitarea_.z = -1100;  //Strange situation.
-        ground_.y = convert_X_2_Height(ground_.x) - 500;
+        blocker_.z = -700;
+        hitarea_.z = -800;  //Strange situation.
+        ground_.y = convert_X_2_Height(ground_.x) - 475;
         ground_.z = 0;
+		ground2_.y = convert_X_2_Height(ground2_.x) - 550;
+		ground2_.z = -200; 
         scene.addChild( blocker_ );
         scene.addChild( hitarea_ );
         scene.addChild( ground_ );
+		scene.addChild( ground2_ );
     }
     
     private function setupEvents():void {
