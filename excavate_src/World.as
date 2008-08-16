@@ -126,6 +126,11 @@ class World extends BasicView
         
         singleRender();
     }
+	
+	public function pseudo_update():void {
+		updateObjPositions();
+		singleRender();
+	}
     
     private function isBlocked():Boolean {
 	    if( inited_ == false ) return true;

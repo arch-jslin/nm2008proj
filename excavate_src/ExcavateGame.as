@@ -56,20 +56,21 @@ public final class ExcavateGame extends Sprite
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
         world_ =    new World(input_, scoreobj_);
-		timer_ =    new Timer(200, 60);
-		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
-		timer_.start();
 		emitterLayer_ = new Emitter(input_);
 		
         addChild(world_);
-		addChild(ui_);
 		addChild(emitterLayer_);
+		addChild(ui_);
+		
         showDebug();
         addEventListener( Event.ENTER_FRAME, mainLoop );
 		input_.addEventListener(PeakEvent.PEAK, 
 			function(){
 				if( score_ && endGame_ && score_.finished )
 					programRestart();
+				else if( !startGame_ ) {
+					gameStart();
+				}
 			});
     }
 	
@@ -85,22 +86,29 @@ public final class ExcavateGame extends Sprite
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
         world_ =    new World(input_, scoreobj_);
-		timer_ =    new Timer(200, 60);
-		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
-		timer_.start();
 		emitterLayer_ = new Emitter(input_);
 		
         addChild(world_);
-		addChild(ui_);
 		addChild(emitterLayer_);
+		addChild(ui_);
 		
-		world_.initSpawn();
+		world_.initSpawn(); //I know this is bad, but since we have to do it here. Because all bitmap are already loaded.
+	}
+
+	private function gameStart():void {
+	    startGame_ = true;
+		timer_ = new Timer(200, 60);
+		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
+		timer_.start();
+		ui_.hideHint();
 	}
     
     private function mainLoop(e:Event):void {
         input_.update();
-        if( !endGame_ ) 
-			world_.update();
+        if( !startGame_ && !endGame_ ) 
+			world_.pseudo_update();
+		else if( startGame_ && !endGame_ )
+		    world_.update();
     }
 	
 	private function timerHandler(e:TimerEvent):void {

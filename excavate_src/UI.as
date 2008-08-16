@@ -39,14 +39,24 @@ class UI extends Sprite
 {
 	//Internal Properties
 	private var input_    : Input;
+	private var hint_     : TextField;
 
-	//3D Related
-	
 	//Getter | Setter
 	
 	//Methods
 	public function UI(input: Input) {
 	    input_ = input;
+		hint_  = new TextField();
+		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
+		hint_.text = "甩動 Wii 搖桿以開始遊戲";
+		hint_.x = 320;	hint_.y = 280;
+		hint_.setTextFormat(tform);
+		hint_.autoSize = TextFieldAutoSize.CENTER;
+		addChild( hint_ );
+	}
+	
+	public function hideHint():void {
+		removeChild( hint_ );
 	}
 	
 	//Helpers
