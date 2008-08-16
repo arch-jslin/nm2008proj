@@ -40,7 +40,6 @@ class Score extends Sprite
 	//Internal Properties
 	private var input_    : Input;
 	private var scoreobj_ : ScoreObject; 
-	private var total_    : uint = 0;
 	
 	//3D Related
 	
@@ -50,7 +49,7 @@ class Score extends Sprite
 	public function Score(input: Input, scoreobj: ScoreObject) {
 	    input_ = input;
 		scoreobj_ = scoreobj;
-		total_ = scoreobj_.houses_ + scoreobj_.trees_ * 2;
+		trace( scoreobj_.score );
 		
 	}
 	

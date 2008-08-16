@@ -23,8 +23,13 @@ THE SOFTWARE.
 package excavate_src {
 
 class ScoreObject {
-    public var trees_ = 0;
-	public var houses_ = 0;
+    private var trees_  : uint = 0;
+	private var houses_ : uint = 0;
+	public function get score():Number { return trees_ * 2 + houses_; }
+	public function get trees():uint   { return trees_; }
+	public function get houses():uint  { return houses_; }
+	public function incTrees():void { ++trees_; }
+	public function incHouses():void { ++houses_; }
 }
 
 } //package

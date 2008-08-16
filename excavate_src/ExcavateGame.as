@@ -71,7 +71,7 @@ public final class ExcavateGame extends Sprite
 	
 	private function timerHandler(e:TimerEvent):void {
 		timecounter_ -= 1;
-	    trace( timecounter_ + " " + scoreobj_.houses_ + " " + scoreobj_.trees_ );
+	    trace( timecounter_ + " " + scoreobj_.houses + " " + scoreobj_.trees );
 		if( timecounter_ == 0 ) {
 		    score_ = new Score(input_, scoreobj_);
 			addChild( score_ );

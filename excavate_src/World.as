@@ -176,7 +176,7 @@ class World extends BasicView
 			o.x = ( 2*i - objsPerSpawn_ ) * xInterval_ * 0.4 + rand(xInterval_)*0.8 + camera.x;
             
             o.z = objZStart_ + i*2; //i is a little bias to avoid z-fighting
-            o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (150 - o.material.bitmap.height/2)*1.5;
+            o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (300 - o.material.bitmap.height);
             o.rotationZ = calculate_Slope_By_X_Pos(o.x);//rand2(20);
             objArray_.push( o );
             scene.addChild( o );
@@ -198,7 +198,7 @@ class World extends BasicView
         for each( var o in objArray_ ) {
             o.z -= currentFrameProgressCache_;
             if( !o.extra["isDying"] )
-                o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (150 - o.material.bitmap.height/2)*1.5;
+                o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (350 - o.material.bitmap.height);
         }
         camera.x += currentFrameXCache_;
         sight_.x += currentFrameXCache_;
@@ -232,7 +232,7 @@ class World extends BasicView
         hitarea_.z = -760;  //Strange situation.
         ground_.y = convert_X_2_Height(ground_.x) - 450;
         ground_.z = 0;
-		ground2_.y = convert_X_2_Height(ground2_.x) - 475;
+		ground2_.y = convert_X_2_Height(ground2_.x) - 525;
 		ground2_.z = -200; 
         scene.addChild( blocker_ );
         scene.addChild( hitarea_ );
@@ -267,9 +267,9 @@ class World extends BasicView
 		//Bad Magic: "png/t" or "png/h" ... the fourth character will be distinguishable
 		var ch : String = (obj.material as BitmapMaterial).texture.toString().charAt(4);
 		if( ch == "h" ) 
-			scoreobj_.houses_ += 1;
+			scoreobj_.incHouses();
 		else if ( ch == "t" ) 
-			scoreobj_.trees_ += 1;
+			scoreobj_.incTrees();
 		
 		if( uint_rand(2) ) {
 			TweenMax.to(obj, 0.66, {y:"-400", ease:Back.easeIn, overwrite:false, 
