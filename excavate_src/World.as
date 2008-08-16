@@ -52,6 +52,9 @@ import org.wiiflash.events.PeakEvent;
 //Import TweenMaxAS3
 import gs.TweenMax;
 import gs.easing.Elastic;
+import gs.easing.Bounce;
+import gs.easing.Back;
+import gs.easing.Expo;
 
 class World extends BasicView
 {
@@ -162,7 +165,7 @@ class World extends BasicView
 			var mat: BitmapFileMaterial = matArray_[uint_rand(houseVariations_)];
 			var o: Plane = new Plane(mat, mat.bitmap.width/1.33, mat.bitmap.height/1.33, 1, 1);
 			
-            o.extra = {hp: 3, isDead: false}; 
+            o.extra = {hp: 3, isDead: false, isDying: false}; 
             o.autoCalcScreenCoords = true;
             
             //Magical formula....
@@ -191,7 +194,7 @@ class World extends BasicView
     private function updateObjPositions():void {
         for each( var o in objArray_ ) {
             o.z -= currentFrameProgressCache_;
-            if( !o.extra["isDead"] )
+            if( !o.extra["isDying"] )
                 o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
         }
         camera.x += currentFrameXCache_;
@@ -242,21 +245,33 @@ class World extends BasicView
             } );
     }
     
-    private function findHitObject():DisplayObject3D {
-        var hitobj: DisplayObject3D = null;
+    private function findHitObject():Plane/*DisplayObject3D*/ {
+        var hitobj: Plane = null;
         for( var i:uint = 0; i < objArray_.length; ++i )
-            if( !objArray_[i].extra["isDead"] && objArray_[i].hitTestObject(hitarea_) ) {
+            if( !objArray_[i].extra["isDying"] && objArray_[i].hitTestObject(hitarea_) ) {
                 hitobj = objArray_[i]; 
                 break;
             }
         return hitobj;
     }
     
-    private function hitReaction(obj: DisplayObject3D):void {
+    private function hitReaction(obj: Plane/*DisplayObject3D*/):void {
         if( obj == null ) return;
         trace( "hit" );
-        obj.extra["isDead"] = true;
-        TweenMax.to(obj, 1, {y:"-400", ease:Elastic.easeIn, overwrite:false, onComplete:function(){scene.removeChild( obj );}});        
+        obj.extra["isDying"] = true;
+		var delta_y:Number = obj.y - obj.material.bitmap.height/10;
+		if( uint_rand(2) ) {
+			TweenMax.to(obj, 0.66, {y:"-400", ease:Back.easeIn, overwrite:false, 
+				onComplete:function(){obj.extra["isDead"] = true; scene.removeChild( obj );}});  //test
+			TweenMax.to(obj, 0.05, {rotationZ:"-10", ease:Expo.easeOut, overwrite:false});
+			TweenMax.to(obj, 0.05, {rotationZ:"15",  ease:Expo.easeOut, delay:0.06, overwrite:false});
+			TweenMax.to(obj, 0.10, {rotationZ:"-25", ease:Expo.easeOut, delay:0.18, overwrite:false});
+			TweenMax.to(obj, 0.10, {rotationZ:"35", ease:Expo.easeOut, delay:0.36, overwrite:false});
+			TweenMax.to(obj, 0.30, {rotationZ:"-20", ease:Expo.easeOut, delay:0.36, overwrite:false});
+		}
+		else
+			TweenMax.to(obj, 1, {rotationX:"60", y:delta_y, scale:.75, ease:Bounce.easeOut, overwrite:false, 
+				onComplete:function(){obj.extra["isDead"] = true; scene.removeChild(obj);}});
     }
     
 	// ------------------------------------------------------------------ Helper
