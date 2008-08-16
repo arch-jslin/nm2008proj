@@ -54,22 +54,23 @@ class Score extends Sprite
 	}
 	
 	private function startTweeningTheListing():void {
-	    if( scoreobj_.houses > 0 ) showListing(scoreobj_.houses, "smallhouse.png", "房子");
-		if( scoreobj_.trees > 0 )  showListing(scoreobj_.trees,  "smalltree.png", "樹木");
-		if( scoreobj_.score > 10 ) showImportant("people1.jpg", "林卻阿嬤的家");
-		if( scoreobj_.score > 20 ) showImportant("people2.jpg", "阿添伯的屋子");
-		if( scoreobj_.score > 30 ) showImportant("people3.jpg", "湯伯伯的房間");
-		if( scoreobj_.score > 40 ) showImportant("people4.jpg", "秀琴阿姨的家");
-		showTotal();
+	    if( scoreobj_.houses > 0 ) showListing(scoreobj_.houses, "smallhouse.png", "房子", 0);
+		if( scoreobj_.trees > 0 )  showListing(scoreobj_.trees,  "smalltree.png", "樹木", 1);
+		if( scoreobj_.score > 10 ) showImportant("people1.jpg", "林卻阿嬤的家", 2);
+		if( scoreobj_.score > 20 ) showImportant("people2.jpg", "阿添伯的屋子", 3);
+		if( scoreobj_.score > 30 ) showImportant("people3.jpg", "湯伯伯的房間", 4);
+		if( scoreobj_.score > 40 ) showImportant("people4.jpg", "秀琴阿姨的家", 5);
+		showTotal(6);
 	}
 	
-	private function showListing(n:uint, file_name:String, item_name:String):void {
+	private function showListing(n:uint, file_name:String, item_name:String, delay:Number):void {
+	    
 	}
 	
-	private function showImportant(file_name:String, item_name:String):void {
+	private function showImportant(file_name:String, item_name:String, delay:Number):void {
 	}
 	
-	private function showTotal():void {
+	private function showTotal(delay:Number):void {
 	    if( scoreobj_.score < 10 ) {
 		
 		} else {
