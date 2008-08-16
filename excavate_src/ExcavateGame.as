@@ -76,7 +76,6 @@ public final class ExcavateGame extends Sprite
 	
 	private function programRestart():void {
 		removeChild( score_ );
-		removeChild( ui_ );
 		removeChild( emitterLayer_ );
 		
 		startGame_ = false;
@@ -107,18 +106,22 @@ public final class ExcavateGame extends Sprite
         input_.update();
         if( !startGame_ && !endGame_ ) 
 			world_.pseudo_update();
-		else if( startGame_ && !endGame_ )
+		else if( startGame_ && !endGame_ ) {
 		    world_.update();
+			ui_.updateProgress( scoreobj_.score );
+		}
     }
 	
 	private function timerHandler(e:TimerEvent):void {
 		timecounter_ -= 1;
-	    trace( timecounter_ + " " + scoreobj_.houses + " " + scoreobj_.trees );
+		ui_.showCounter( timecounter_ );
+	    //trace( timecounter_ + " " + scoreobj_.houses + " " + scoreobj_.trees );
 		if( timecounter_ == 0 ) {
 		    endGame_ = true;
 		    score_ = new Score(input_, scoreobj_);
 			addChild( score_ );
 			removeChild( world_ );
+			removeChild( ui_ );
 		}
 	}
     

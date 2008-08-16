@@ -40,6 +40,8 @@ class UI extends Sprite
 	//Internal Properties
 	private var input_    : Input;
 	private var hint_     : TextField;
+	private var progress_ : TextField;
+	private var counter_  : TextField;
 
 	//Getter | Setter
 	
@@ -53,6 +55,34 @@ class UI extends Sprite
 		hint_.setTextFormat(tform);
 		hint_.autoSize = TextFieldAutoSize.CENTER;
 		addChild( hint_ );
+		
+		progress_ = new TextField();
+		progress_.text = "0 / 100";
+		progress_.x = 350; progress_.y = 520;
+		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
+		progress_.setTextFormat(pform);
+		progress_.autoSize = TextFieldAutoSize.CENTER;
+		addChild( progress_ );
+		
+		counter_ = new TextField();
+		counter_.text = "60";
+		counter_.x = 350; counter_.y = 20;
+		var cform: TextFormat = new TextFormat("SimHei", 30, 0x000000, true);
+		counter_.setTextFormat(cform);
+		counter_.autoSize = TextFieldAutoSize.CENTER;
+		addChild( counter_ );
+	}
+	
+	public function updateProgress(percent: Number): void {
+	    progress_.text = percent + " / 100";
+		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
+		progress_.setTextFormat(pform);
+	}
+	
+	public function showCounter(count: uint): void {
+		counter_.text = count.toString();
+		var cform: TextFormat = new TextFormat("SimHei", 30, 0x000000, true);
+		counter_.setTextFormat(cform);
 	}
 	
 	public function hideHint():void {
