@@ -31,6 +31,9 @@ import flash.utils.*;
 import flash.ui.*;
 import flash.text.*;
 
+//Import PeakDetection
+import org.wiiflash.events.PeakEvent;
+
 public final class ExcavateGame extends Sprite 
 {
     //Internal Properties
@@ -49,8 +52,8 @@ public final class ExcavateGame extends Sprite
     //Methods
     public function ExcavateGame() {
         input_ =    new Input(stage);
-		ui_    =    new UI(input_);
 		
+		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
         world_ =    new World(input_, scoreobj_);
 		timer_ =    new Timer(200, 60);
@@ -63,17 +66,48 @@ public final class ExcavateGame extends Sprite
 		addChild(emitterLayer_);
         showDebug();
         addEventListener( Event.ENTER_FRAME, mainLoop );
+		input_.addEventListener(PeakEvent.PEAK, 
+			function(){
+				if( score_ && endGame_ && score_.finished )
+					programRestart();
+			});
     }
+	
+	private function programRestart():void {
+		removeChild( score_ );
+		removeChild( ui_ );
+		removeChild( emitterLayer_ );
+		
+		startGame_ = false;
+		endGame_   = false;
+		timecounter_ = 60;
+		
+		ui_    =    new UI(input_);
+		scoreobj_ = new ScoreObject();
+        world_ =    new World(input_, scoreobj_);
+		timer_ =    new Timer(200, 60);
+		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
+		timer_.start();
+		emitterLayer_ = new Emitter(input_);
+		
+        addChild(world_);
+		addChild(ui_);
+		addChild(emitterLayer_);
+		
+		world_.initSpawn();
+	}
     
     private function mainLoop(e:Event):void {
         input_.update();
-        world_.update();
+        if( !endGame_ ) 
+			world_.update();
     }
 	
 	private function timerHandler(e:TimerEvent):void {
 		timecounter_ -= 1;
 	    trace( timecounter_ + " " + scoreobj_.houses + " " + scoreobj_.trees );
 		if( timecounter_ == 0 ) {
+		    endGame_ = true;
 		    score_ = new Score(input_, scoreobj_);
 			addChild( score_ );
 			removeChild( world_ );

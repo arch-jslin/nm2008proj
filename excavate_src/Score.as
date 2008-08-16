@@ -41,10 +41,12 @@ class Score extends Sprite
 	//Internal Properties
 	private var input_    : Input;
 	private var scoreobj_ : ScoreObject; 
+	private var finished_ : Boolean = false;
 	
 	//3D Related
 	
 	//Getter | Setter
+	public function get finished():Boolean { return finished_; }
 	
 	//Methods
 	public function Score(input: Input, scoreobj: ScoreObject) {
@@ -88,7 +90,11 @@ class Score extends Sprite
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.CENTER;
 		//title.embedFonts = true;
-		TweenMax.from(title, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*5 + 2, onComplete:function(){addChild( title );}});	
+		TweenMax.from(title, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*5 + 2, 
+		    onComplete:function(){
+				addChild( title );
+				finished_ = true;
+			}});	
 	}
 	
 	private function showTitle(item_name:String, d:Number):void {

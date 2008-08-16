@@ -179,7 +179,7 @@ class World extends BasicView
         }
     }
     
-    private function initSpawn():void {
+    public function initSpawn():void {
         var len: uint = Math.abs( objZEnd_ - objZStart_ ); 
         var times: uint = len / spawnGap_;
         for( var i:uint = 0; i < times; ++i ) {
