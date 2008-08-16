@@ -51,10 +51,7 @@ import org.wiiflash.events.PeakEvent;
 
 //Import TweenMaxAS3
 import gs.TweenMax;
-import gs.easing.Elastic;
-import gs.easing.Bounce;
-import gs.easing.Back;
-import gs.easing.Expo;
+import gs.easing.*;
 
 class World extends BasicView
 {
@@ -69,7 +66,7 @@ class World extends BasicView
     private var objZEnd_   : Number = -700;
     private var xInterval_ : Number = 1000;
     private var yInterval_ : Number = 200;
-	private var houseVariations_ : Number = 12;
+	private var houseVariations_ : Number = 10;
 	private var inited_    : Boolean = false;
     
     //caches
@@ -82,7 +79,7 @@ class World extends BasicView
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
     private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
     private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1400, 1, 1);
-	private var ground2_   : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1400, 1, 1);
+	private var ground2_   : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1350, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
 	private var matArray_  : Array = new Array(); //contains BitmapFileMaterial
     
@@ -163,7 +160,7 @@ class World extends BasicView
         for( var i:uint = 0; i < objsPerSpawn_; ++i ) {
             //var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 450, 300, 4, 4); //temp
 			var mat: BitmapFileMaterial = matArray_[uint_rand(houseVariations_)];
-			var o: Plane = new Plane(mat, mat.bitmap.width/1.33, mat.bitmap.height/1.33, 1, 1);
+			var o: Plane = new Plane(mat, mat.bitmap.width/1.2, mat.bitmap.height/1.2, 1, 1);
 			
             o.extra = {hp: 3, isDead: false, isDying: false}; 
             o.autoCalcScreenCoords = true;
@@ -173,7 +170,7 @@ class World extends BasicView
 			o.x = ( 2*i - objsPerSpawn_ ) * xInterval_ * 0.5 + rand(xInterval_) + camera.x;
             
             o.z = objZStart_ + i*2; //i is a little bias to avoid z-fighting
-            o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
+            o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (150 - o.material.bitmap.height/2)*1.5;
             o.rotationZ = calculate_Slope_By_X_Pos(o.x);//rand2(20);
             objArray_.push( o );
             scene.addChild( o );
@@ -195,7 +192,7 @@ class World extends BasicView
         for each( var o in objArray_ ) {
             o.z -= currentFrameProgressCache_;
             if( !o.extra["isDying"] )
-                o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z);
+                o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (150 - o.material.bitmap.height/2)*1.5;
         }
         camera.x += currentFrameXCache_;
         sight_.x += currentFrameXCache_;
@@ -229,7 +226,7 @@ class World extends BasicView
         hitarea_.z = -800;  //Strange situation.
         ground_.y = convert_X_2_Height(ground_.x) - 475;
         ground_.z = 0;
-		ground2_.y = convert_X_2_Height(ground2_.x) - 550;
+		ground2_.y = convert_X_2_Height(ground2_.x) - 475;
 		ground2_.z = -200; 
         scene.addChild( blocker_ );
         scene.addChild( hitarea_ );

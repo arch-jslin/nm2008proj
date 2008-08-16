@@ -36,12 +36,15 @@ public final class ExcavateGame extends Sprite
     //Internal Properties
     private var input_     : Input;
     private var world_     : World;
+	private var gfxLayer_  : Sprite;
     
     //Methods
     public function ExcavateGame() {
         input_ = new Input(stage);
         world_ = new World(input_);
+		gfxLayer_ = new Sprite();
         addChild(world_);
+		addChild(gfxLayer_);
         showDebug();
         addEventListener( Event.ENTER_FRAME, mainLoop );
     }
