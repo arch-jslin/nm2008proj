@@ -41,6 +41,7 @@ public final class ExcavateGame extends Sprite
 	private var scoreobj_      : ScoreObject;
 	private var ui_            : UI;
 	
+	private var startGame_     : Boolean = false;
 	private var endGame_       : Boolean = false;
 	private var timer_         : Timer;
 	private var timecounter_   : uint = 60;
@@ -52,7 +53,7 @@ public final class ExcavateGame extends Sprite
 		
 		scoreobj_ = new ScoreObject();
         world_ =    new World(input_, scoreobj_);
-		timer_ =    new Timer(1000, 60);
+		timer_ =    new Timer(200, 60);
 		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
 		timer_.start();
 		emitterLayer_ = new Emitter(input_);

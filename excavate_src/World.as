@@ -125,10 +125,6 @@ class World extends BasicView
         cleanUpObjects();
         
         singleRender();
-        
-        //test
-        //trace( (objArray_[0].screen.x + stage.width/2) + " " + (objArray_[0].screen.y + stage.height/2) );
-        //trace( isBlockedCache_ );
     }
     
     private function isBlocked():Boolean {

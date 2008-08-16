@@ -50,7 +50,31 @@ class Score extends Sprite
 	    input_ = input;
 		scoreobj_ = scoreobj;
 		trace( scoreobj_.score );
+		startTweeningTheListing();
+	}
+	
+	private function startTweeningTheListing():void {
+	    if( scoreobj_.houses > 0 ) showListing(scoreobj_.houses, "smallhouse.png", "房子");
+		if( scoreobj_.trees > 0 )  showListing(scoreobj_.trees,  "smalltree.png", "樹木");
+		if( scoreobj_.score > 10 ) showImportant("people1.jpg", "林卻阿嬤的家");
+		if( scoreobj_.score > 20 ) showImportant("people2.jpg", "阿添伯的屋子");
+		if( scoreobj_.score > 30 ) showImportant("people3.jpg", "湯伯伯的房間");
+		if( scoreobj_.score > 40 ) showImportant("people4.jpg", "秀琴阿姨的家");
+		showTotal();
+	}
+	
+	private function showListing(n:uint, file_name:String, item_name:String):void {
+	}
+	
+	private function showImportant(file_name:String, item_name:String):void {
+	}
+	
+	private function showTotal():void {
+	    if( scoreobj_.score < 10 ) {
 		
+		} else {
+		
+		}
 	}
 	
 	//Helpers
