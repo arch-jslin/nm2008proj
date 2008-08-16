@@ -66,8 +66,10 @@ class World extends BasicView
     private var objZEnd_   : Number = -700;
     private var xInterval_ : Number = 1000;
     private var yInterval_ : Number = 200;
-	private var houseVariations_ : Number = 10;
+	private var houseVariations_ : uint = 9;
+	private var treeVariations_  : uint = 5;
 	private var inited_    : Boolean = false;
+	private var scoreobj_  : ScoreObject;
     
     //caches
     private var currentFrameProgressCache_ : Number = 0;
@@ -78,7 +80,7 @@ class World extends BasicView
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
     private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
-    private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1400, 1, 1);
+    private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1350, 1, 1);
 	private var ground2_   : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1350, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
 	private var matArray_  : Array = new Array(); //contains BitmapFileMaterial
@@ -89,9 +91,10 @@ class World extends BasicView
     public function get nextSpawnP():Number{ return nextSpawnP_; }
     
     //methods
-    public function World(input: Input):void {
+    public function World(input: Input, scoreobj: ScoreObject):void {
         super(800, 600, false, true, "Target");
         input_ = input;
+		scoreobj_ = scoreobj;
 		initBitmapMaterials();
         setup3D();
         setupEvents();
@@ -101,6 +104,9 @@ class World extends BasicView
 	public function initBitmapMaterials():void {
 	    for( var i:uint = 0; i < houseVariations_ ; ++i )
 		    matArray_.push( new BitmapFileMaterial("png/house"+uint_to_s(i,2)+".png") );
+			
+		for( var i:uint = 0; i < treeVariations_ ; ++i )
+		    matArray_.push( new BitmapFileMaterial("png/tree"+uint_to_s(i,2)+".png") );
 			
 	    BitmapFileMaterial.callback = initSpawn;
 	}
@@ -159,7 +165,7 @@ class World extends BasicView
     private function spawnObjects():void {
         for( var i:uint = 0; i < objsPerSpawn_; ++i ) {
             //var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 450, 300, 4, 4); //temp
-			var mat: BitmapFileMaterial = matArray_[uint_rand(houseVariations_)];
+			var mat: BitmapFileMaterial = matArray_[uint_rand(houseVariations_ + treeVariations_)];
 			var o: Plane = new Plane(mat, mat.bitmap.width/1.2, mat.bitmap.height/1.2, 1, 1);
 			
             o.extra = {hp: 3, isDead: false, isDying: false}; 
@@ -167,7 +173,7 @@ class World extends BasicView
             
             //Magical formula....
             //o.x = ( 2*i - objsPerSpawn_ ) * xInterval_ + rand(xInterval_ * 2) + camera.x;
-			o.x = ( 2*i - objsPerSpawn_ ) * xInterval_ * 0.5 + rand(xInterval_) + camera.x;
+			o.x = ( 2*i - objsPerSpawn_ ) * xInterval_ * 0.4 + rand(xInterval_)*0.8 + camera.x;
             
             o.z = objZStart_ + i*2; //i is a little bias to avoid z-fighting
             o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (150 - o.material.bitmap.height/2)*1.5;
@@ -223,8 +229,8 @@ class World extends BasicView
 		camera.target = sight_;
         
         blocker_.z = -700;
-        hitarea_.z = -800;  //Strange situation.
-        ground_.y = convert_X_2_Height(ground_.x) - 475;
+        hitarea_.z = -760;  //Strange situation.
+        ground_.y = convert_X_2_Height(ground_.x) - 450;
         ground_.z = 0;
 		ground2_.y = convert_X_2_Height(ground2_.x) - 475;
 		ground2_.z = -200; 
@@ -254,17 +260,25 @@ class World extends BasicView
     
     private function hitReaction(obj: Plane/*DisplayObject3D*/):void {
         if( obj == null ) return;
-        trace( "hit" );
         obj.extra["isDying"] = true;
-		var delta_y:Number = obj.y - obj.material.bitmap.height/10;
+		var delta_y:Number = obj.y - obj.material.bitmap.height/6;
+		
+		//trace( (obj.material as BitmapMaterial).texture.toString().charAt(4) ); 
+		//Bad Magic: "png/t" or "png/h" ... the fourth character will be distinguishable
+		var ch : String = (obj.material as BitmapMaterial).texture.toString().charAt(4);
+		if( ch == "h" ) 
+			scoreobj_.houses_ += 1;
+		else if ( ch == "t" ) 
+			scoreobj_.trees_ += 1;
+		
 		if( uint_rand(2) ) {
 			TweenMax.to(obj, 0.66, {y:"-400", ease:Back.easeIn, overwrite:false, 
 				onComplete:function(){obj.extra["isDead"] = true; scene.removeChild( obj );}});  //test
-			TweenMax.to(obj, 0.05, {rotationZ:"-10", ease:Expo.easeOut, overwrite:false});
-			TweenMax.to(obj, 0.05, {rotationZ:"15",  ease:Expo.easeOut, delay:0.06, overwrite:false});
-			TweenMax.to(obj, 0.10, {rotationZ:"-25", ease:Expo.easeOut, delay:0.18, overwrite:false});
-			TweenMax.to(obj, 0.10, {rotationZ:"35", ease:Expo.easeOut, delay:0.36, overwrite:false});
-			TweenMax.to(obj, 0.30, {rotationZ:"-20", ease:Expo.easeOut, delay:0.36, overwrite:false});
+			TweenMax.to(obj, 0.05, {rotationZ:"-10", ease:Linear.easeOut, overwrite:false});
+			TweenMax.to(obj, 0.05, {rotationZ:"15",  ease:Linear.easeOut, delay:0.05, overwrite:false});
+			TweenMax.to(obj, 0.10, {rotationZ:"-25", ease:Linear.easeOut, delay:0.10, overwrite:false});
+			TweenMax.to(obj, 0.10, {rotationZ:"25",  ease:Linear.easeOut, delay:0.20, overwrite:false});
+			TweenMax.to(obj, 0.30, {rotationZ:"-30", ease:Linear.easeOut, delay:0.30, overwrite:false});
 		}
 		else
 			TweenMax.to(obj, 1, {rotationX:"60", y:delta_y, scale:.75, ease:Bounce.easeOut, overwrite:false, 

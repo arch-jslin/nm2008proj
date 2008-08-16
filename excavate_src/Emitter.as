@@ -35,15 +35,17 @@ import flash.text.*;
 import gs.TweenMax;
 import gs.easing.*;
 
-class Emitter {
+class Emitter extends Sprite 
+{
 	//Internal Properties
-	
+	private var input_ : Input;
 	//3D Related
 	
 	//Getter | Setter
 	
 	//Methods
-	public function Emitter() {
+	public function Emitter(input: Input) {
+	    input_ = input;
 	}
 	
 	//Helpers

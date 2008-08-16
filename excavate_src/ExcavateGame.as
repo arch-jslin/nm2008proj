@@ -34,17 +34,32 @@ import flash.text.*;
 public final class ExcavateGame extends Sprite 
 {
     //Internal Properties
-    private var input_     : Input;
-    private var world_     : World;
-	private var gfxLayer_  : Sprite;
+    private var input_         : Input;
+    private var world_         : World;
+	private var emitterLayer_  : Emitter;
+	private var score_         : Score;
+	private var scoreobj_      : ScoreObject;
+	private var ui_            : UI;
+	
+	private var endGame_       : Boolean = false;
+	private var timer_         : Timer;
+	private var timecounter_   : uint = 60;
     
     //Methods
     public function ExcavateGame() {
-        input_ = new Input(stage);
-        world_ = new World(input_);
-		gfxLayer_ = new Sprite();
+        input_ =    new Input(stage);
+		ui_    =    new UI(input_);
+		
+		scoreobj_ = new ScoreObject();
+        world_ =    new World(input_, scoreobj_);
+		timer_ =    new Timer(1000, 60);
+		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
+		timer_.start();
+		emitterLayer_ = new Emitter(input_);
+		
         addChild(world_);
-		addChild(gfxLayer_);
+		addChild(ui_);
+		addChild(emitterLayer_);
         showDebug();
         addEventListener( Event.ENTER_FRAME, mainLoop );
     }
@@ -53,6 +68,16 @@ public final class ExcavateGame extends Sprite
         input_.update();
         world_.update();
     }
+	
+	private function timerHandler(e:TimerEvent):void {
+		timecounter_ -= 1;
+	    trace( timecounter_ + " " + scoreobj_.houses_ + " " + scoreobj_.trees_ );
+		if( timecounter_ == 0 ) {
+		    score_ = new Score(input_, scoreobj_);
+			addChild( score_ );
+			removeChild( world_ );
+		}
+	}
     
     // ------------------------------------------------------------------ Debug
     
