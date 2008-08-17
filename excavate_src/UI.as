@@ -89,6 +89,25 @@ class UI extends Sprite
 		removeChild( hint_ );
 	}
 	
+	public function popUpItem(x:Number, y:Number, ch:String):void {
+	    var item: TextField = new TextField();
+		if( ch == "h" )
+			item.text = "房子 +1";
+		else if( ch == "t" )
+		    item.text = "樹木 +1";
+			
+		item.x = x + stage.width/2; item.y = y + stage.height/2;
+		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
+		item.setTextFormat(pform);
+		item.autoSize = TextFieldAutoSize.CENTER;
+		addChild( item );
+		
+		TweenMax.to(item, 1, {y:"-100", ease:Expo.easeOut, overwrite:false, 
+			onComplete:function(){
+				removeChild( item );
+			}});
+	}
+	
 	//Helpers
 }
 

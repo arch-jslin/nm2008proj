@@ -82,6 +82,7 @@ class World extends BasicView
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
     private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
+	private var sky_       : Plane           = new Plane(new BitmapFileMaterial("jpg/sky.jpg"), 8000, 3000, 1, 1);
     private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1350, 1, 1);
 	private var ground2_   : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1350, 1, 1);
     private var objArray_  : Array = new Array(); //contains DisplayObject3D
@@ -235,10 +236,12 @@ class World extends BasicView
         
         blocker_.z = -700;
         hitarea_.z = -760;  //Strange situation.
+		sky_.z = 500;
         ground_.y = convert_X_2_Height(ground_.x) - 450;
         ground_.z = 0;
 		ground2_.y = convert_X_2_Height(ground2_.x) - 525;
-		ground2_.z = -200; 
+		ground2_.z = -200;
+		scene.addChild( sky_ );
         scene.addChild( blocker_ );
         scene.addChild( hitarea_ );
         scene.addChild( ground_ );
@@ -271,10 +274,14 @@ class World extends BasicView
 		//trace( (obj.material as BitmapMaterial).texture.toString().charAt(4) ); 
 		//Bad Magic: "png/t" or "png/h" ... the fourth character will be distinguishable
 		var ch : String = (obj.material as BitmapMaterial).texture.toString().charAt(4);
-		if( ch == "h" ) 
+		if( ch == "h" )
 			scoreobj_.incHouses();
-		else if ( ch == "t" ) 
+		else if ( ch == "t" )
 			scoreobj_.incTrees();
+		ui_.popUpItem(obj.screen.x, obj.screen.y, ch);
+		for( var i:uint = 0; i < 15; ++i )
+			emitter_.smoking(obj.screen.x, obj.screen.y + obj.material.bitmap.height/2);
+		
 		
 		if( uint_rand(2) ) {
 			TweenMax.to(obj, 0.66, {y:"-400", ease:Back.easeIn, overwrite:false, 

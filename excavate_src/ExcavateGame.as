@@ -51,6 +51,8 @@ public final class ExcavateGame extends Sprite
     
     //Methods
     public function ExcavateGame() {
+	    stage.scaleMode = StageScaleMode.EXACT_FIT;
+		stage.quality   = StageQuality.LOW;
         input_ =    new Input(stage);
 		
 		ui_    =    new UI(input_);
@@ -76,7 +78,6 @@ public final class ExcavateGame extends Sprite
 	
 	private function programRestart():void {
 		removeChild( score_ );
-		removeChild( emitterLayer_ );
 		
 		startGame_ = false;
 		endGame_   = false;
@@ -96,7 +97,7 @@ public final class ExcavateGame extends Sprite
 
 	private function gameStart():void {
 	    startGame_ = true;
-		timer_ = new Timer(200, 60);
+		timer_ = new Timer(400, 60);
 		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
 		timer_.start();
 		ui_.hideHint();
@@ -122,6 +123,7 @@ public final class ExcavateGame extends Sprite
 			addChild( score_ );
 			removeChild( world_ );
 			removeChild( ui_ );
+			removeChild( emitterLayer_ );
 		}
 	}
     

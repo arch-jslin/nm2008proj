@@ -48,7 +48,36 @@ class Emitter extends Sprite
 	    input_ = input;
 	}
 	
-	//Helpers
+	public function exploding(x:Number, y:Number):void {
+
+	}
+	
+	public function smoking(x:Number, y:Number):void {
+	    var ClassRef: Class = Class(getDefinitionByName("Smoke"));
+		var p: MovieClip = new ClassRef();
+		
+		p.x = x + stage.width/2 + rand2(75); 
+		p.y = y + stage.height/2 + rand(-20);
+		p.scaleX = 0.1;
+		p.scaleY = 0.1;
+		
+		addChild( p );
+		
+		var dx:Number = p.x + 400;
+		var dy:Number = p.y + rand(-400);
+		var rot:Number = p.rotation + rand2(180);
+		
+		TweenMax.to(p, 1, {x:dx, y:dy, scaleX:2, scaleY:2, rotation:rot, alpha:0, delay:rand(0.6), ease:Linear.easeOut, overwrite:false, 
+			onComplete:function(){
+				removeChild( p );
+			}});        
+	}
+	
+	// ------------------------------------------------------------------ Helper
+
+	protected function rand(i:Number):Number  { return Math.random()*i; }
+	protected function uint_rand(i:uint):uint { return rand(i); }
+	protected function rand2(i:Number):Number { return rand(i)*2 - i; }
 }
 
 } //package
