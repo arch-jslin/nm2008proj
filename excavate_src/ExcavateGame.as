@@ -43,6 +43,7 @@ public final class ExcavateGame extends Sprite
 	private var score_         : Score;
 	private var scoreobj_      : ScoreObject;
 	private var ui_            : UI;
+	private var intro_         : Intro;
 	
 	private var startGame_     : Boolean = false;
 	private var endGame_       : Boolean = false;
@@ -55,6 +56,7 @@ public final class ExcavateGame extends Sprite
 		stage.quality   = StageQuality.LOW;
         input_ =    new Input(stage);
 		
+		intro_ =    new Intro(input_);
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
 		emitterLayer_ = new Emitter(input_);
@@ -83,6 +85,7 @@ public final class ExcavateGame extends Sprite
 		endGame_   = false;
 		timecounter_ = 60;
 		
+		intro_ =    new Intro(input_);
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
 		emitterLayer_ = new Emitter(input_);
