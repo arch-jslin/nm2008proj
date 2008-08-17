@@ -98,6 +98,13 @@ class UI extends Sprite
 		removeChild( hint_ );
 	}
 	
+	public function showHint(t:String):void {
+	    hint_.text = t;
+		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
+		hint_.setTextFormat( tform );
+	    addChild( hint_ );
+	}
+	
 	public function popUpItem(x:Number, y:Number, ch:String):void {
 	    var item: TextField = new TextField();
 		if( ch == "h" )

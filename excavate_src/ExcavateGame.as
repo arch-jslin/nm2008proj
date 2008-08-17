@@ -90,6 +90,10 @@ public final class ExcavateGame extends Sprite
 		addChild(ui_);
 	}
 	
+	private function changeSceneFrom2_to_3():void {
+	
+	}
+	
 	private function programRestart():void {
 	    removeChild( intro_ );
 		removeChild( score_ );
@@ -131,13 +135,18 @@ public final class ExcavateGame extends Sprite
 		ui_.showCounter( timecounter_ );
 	    //trace( timecounter_ + " " + scoreobj_.houses + " " + scoreobj_.trees );
 		if( timecounter_ == 0 ) {
+		    ui_.showHint( "Time's Up!" );
 		    endGame_ = true;
-		    score_ = new Score(input_, scoreobj_);
-			addChild( score_ );
 			world_.stopSounds();
-			removeChild( world_ );
-			removeChild( ui_ );
-			removeChild( emitterLayer_ );
+			TweenMax.to(world_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay: 2, 
+			    onComplete:function(){
+					removeChild( world_ );
+					removeChild( ui_ );
+					removeChild( emitterLayer_ );
+					score_ = new Score(input_, scoreobj_);
+					addChild( score_ );
+					TweenMax.from( score_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false});
+				}});
 		}
 	}
     
