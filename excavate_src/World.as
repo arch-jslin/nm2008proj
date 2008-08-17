@@ -70,6 +70,8 @@ class World extends BasicView
 	private var treeVariations_  : uint = 5;
 	private var inited_    : Boolean = false;
 	private var scoreobj_  : ScoreObject;
+	private var ui_        : UI;
+	private var emitter_   : Emitter;
     
     //caches
     private var currentFrameProgressCache_ : Number = 0;
@@ -91,10 +93,12 @@ class World extends BasicView
     public function get nextSpawnP():Number{ return nextSpawnP_; }
     
     //methods
-    public function World(input: Input, scoreobj: ScoreObject):void {
+    public function World(input: Input, scoreobj: ScoreObject, ui: UI, emitter: Emitter):void {
         super(800, 600, false, true, "Target");
         input_ = input;
 		scoreobj_ = scoreobj;
+		ui_ = ui;
+		emitter_ = emitter;
 		initBitmapMaterials();
         setup3D();
         setupEvents();

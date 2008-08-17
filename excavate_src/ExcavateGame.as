@@ -55,8 +55,8 @@ public final class ExcavateGame extends Sprite
 		
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
-        world_ =    new World(input_, scoreobj_);
 		emitterLayer_ = new Emitter(input_);
+		world_ =    new World(input_, scoreobj_, ui_, emitterLayer_);
 		
         addChild(world_);
 		addChild(emitterLayer_);
@@ -84,8 +84,8 @@ public final class ExcavateGame extends Sprite
 		
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
-        world_ =    new World(input_, scoreobj_);
 		emitterLayer_ = new Emitter(input_);
+		world_ =    new World(input_, scoreobj_, ui_, emitterLayer_);
 		
         addChild(world_);
 		addChild(emitterLayer_);
