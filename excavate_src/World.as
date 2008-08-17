@@ -265,7 +265,7 @@ class World extends BasicView
 		ground2_.y = convert_X_2_Height(ground2_.x) - 525;
 		ground2_.z = -200;
 		scene.addChild( sky_ );
-        scene.addChild( blocker_ );
+        //scene.addChild( blocker_ );
         scene.addChild( hitarea_ );
         scene.addChild( ground_ );
 		scene.addChild( ground2_ );
@@ -275,6 +275,8 @@ class World extends BasicView
         input_.addEventListener(PeakEvent.PEAK, 
             function(){  
                 peakCount_ += 1;
+				ui_.arm.gotoAndStop(2);
+				TweenMax.to(ui_, 0.5, {onComplete:function(){ui_.arm.gotoAndStop(1);}});
                 hitReaction( findHitObject() );
             } );
     }

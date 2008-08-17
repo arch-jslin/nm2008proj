@@ -42,12 +42,21 @@ class UI extends Sprite
 	private var hint_     : TextField;
 	private var progress_ : TextField;
 	private var counter_  : TextField;
+	
+	private var arm_      : MovieClip;
 
 	//Getter | Setter
+	public function get arm():MovieClip { return arm_; }
 	
 	//Methods
 	public function UI(input: Input) {
 	    input_ = input;
+		var ClassRef: Class = Class(getDefinitionByName("Excavator_Arm"));
+		arm_ = new ClassRef();
+		arm_.x = 400;
+		arm_.y = 700;
+		addChild( arm_ );
+		
 		hint_  = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
 		hint_.text = "甩動 Wii 搖桿以開始遊戲";
@@ -66,8 +75,8 @@ class UI extends Sprite
 		
 		counter_ = new TextField();
 		counter_.text = "60";
-		counter_.x = 350; counter_.y = 20;
-		var cform: TextFormat = new TextFormat("SimHei", 30, 0x000000, true);
+		counter_.x = 350; counter_.y = 40;
+		var cform: TextFormat = new TextFormat("SimHei", 40, 0xffffff, true);
 		counter_.setTextFormat(cform);
 		counter_.autoSize = TextFieldAutoSize.CENTER;
 		addChild( counter_ );
@@ -81,7 +90,7 @@ class UI extends Sprite
 	
 	public function showCounter(count: uint): void {
 		counter_.text = count.toString();
-		var cform: TextFormat = new TextFormat("SimHei", 30, 0x000000, true);
+		var cform: TextFormat = new TextFormat("SimHei", 40, 0xffffff, true);
 		counter_.setTextFormat(cform);
 	}
 	
