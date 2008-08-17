@@ -38,7 +38,9 @@ import gs.easing.*;
 class Intro extends Sprite 
 {
 	//Internal Properties
-	private var input_ : Input;
+	private var input_      : Input;
+	private var intro_text_ : MovieClip;
+	
 	//3D Related
 	
 	//Getter | Setter
@@ -46,6 +48,11 @@ class Intro extends Sprite
 	//Methods
 	public function Intro(input: Input) {
 	    input_ = input;
+		var ClassRef:Class = Class(getDefinitionByName("Intro_1"));
+		intro_text_ = new ClassRef();
+		intro_text_.x = 400;
+		intro_text_.y = 300;
+		addChild( intro_text_ );
 	}
 }
 

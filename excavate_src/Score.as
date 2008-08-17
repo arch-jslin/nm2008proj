@@ -62,10 +62,10 @@ class Score extends Sprite
 		showTotal(++d);
 	    showListing(scoreobj_.houses, "png/smallhouse.png", "房子", ++d);
 		showListing(scoreobj_.trees,  "png/smalltree.png", "樹木", ++d);
-		if( scoreobj_.score > 1 ) showImportant("jpg/people1.jpg", "林卻阿嬤的家", ++d);
-		if( scoreobj_.score > 2 ) showImportant("jpg/people2.jpg", "阿添伯的屋子", ++d);
-		if( scoreobj_.score > 3 ) showImportant("jpg/people3.jpg", "湯伯伯的房間", ++d);
-		if( scoreobj_.score > 4 ) showImportant("jpg/people4.jpg", "秀琴阿姨的家", ++d);
+		if( scoreobj_.score > 10 ) showImportant("jpg/people1.jpg", "林卻阿嬤的家", ++d);
+		if( scoreobj_.score > 20 ) showImportant("jpg/people2.jpg", "阿添伯的屋子", ++d);
+		if( scoreobj_.score > 30 ) showImportant("jpg/people3.jpg", "湯伯伯的房間", ++d);
+		if( scoreobj_.score > 40 ) showImportant("jpg/people4.jpg", "秀琴阿姨的家", ++d);
 		
 		var show_text:String = "";
 		var file_name:String = "";

@@ -34,6 +34,10 @@ import flash.text.*;
 //Import PeakDetection
 import org.wiiflash.events.PeakEvent;
 
+//Import TweenMaxAS3
+import gs.TweenMax;
+import gs.easing.*;
+
 public final class ExcavateGame extends Sprite 
 {
     //Internal Properties
@@ -55,8 +59,27 @@ public final class ExcavateGame extends Sprite
 	    stage.scaleMode = StageScaleMode.EXACT_FIT;
 		stage.quality   = StageQuality.LOW;
         input_ =    new Input(stage);
-		
 		intro_ =    new Intro(input_);
+		addChild(intro_);
+		
+		TweenMax.from(intro_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:0});
+		TweenMax.to  (intro_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:4, 
+			onComplete:function(){
+				changeSceneFrom1_to_2();
+				//showDebug();
+		        addEventListener( Event.ENTER_FRAME, mainLoop );
+				input_.addEventListener(PeakEvent.PEAK, 
+					function(){
+						if( score_ && endGame_ && score_.finished )
+							programRestart();
+						else if( !startGame_ ) {
+							gameStart();
+						}
+					});	
+		    }});
+    }
+	
+	private function changeSceneFrom1_to_2():void {
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
 		emitterLayer_ = new Emitter(input_);
@@ -65,20 +88,10 @@ public final class ExcavateGame extends Sprite
         addChild(world_);
 		addChild(emitterLayer_);
 		addChild(ui_);
-		
-        showDebug();
-        addEventListener( Event.ENTER_FRAME, mainLoop );
-		input_.addEventListener(PeakEvent.PEAK, 
-			function(){
-				if( score_ && endGame_ && score_.finished )
-					programRestart();
-				else if( !startGame_ ) {
-					gameStart();
-				}
-			});
-    }
+	}
 	
 	private function programRestart():void {
+	    removeChild( intro_ );
 		removeChild( score_ );
 		
 		startGame_ = false;
@@ -86,21 +99,18 @@ public final class ExcavateGame extends Sprite
 		timecounter_ = 60;
 		
 		intro_ =    new Intro(input_);
-		ui_    =    new UI(input_);
-		scoreobj_ = new ScoreObject();
-		emitterLayer_ = new Emitter(input_);
-		world_ =    new World(input_, scoreobj_, ui_, emitterLayer_);
-		
-        addChild(world_);
-		addChild(emitterLayer_);
-		addChild(ui_);
-		
-		world_.initSpawn(); //I know this is bad, but since we have to do it here. Because all bitmap are already loaded.
+		addChild(intro_);
+		TweenMax.from(intro_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:0});
+		TweenMax.to  (intro_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:4, 
+			onComplete:function(){
+				changeSceneFrom1_to_2();
+				world_.initSpawn(); //I know this is bad, but since we have to do it here. Because all bitmap are already loaded.
+		    }});
 	}
 
 	private function gameStart():void {
 	    startGame_ = true;
-		timer_ = new Timer(400, 60);
+		timer_ = new Timer(1000, 60);
 		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
 		timer_.start();
 		ui_.hideHint();
@@ -124,6 +134,7 @@ public final class ExcavateGame extends Sprite
 		    endGame_ = true;
 		    score_ = new Score(input_, scoreobj_);
 			addChild( score_ );
+			world_.stopSounds();
 			removeChild( world_ );
 			removeChild( ui_ );
 			removeChild( emitterLayer_ );

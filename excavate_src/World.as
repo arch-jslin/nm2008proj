@@ -30,6 +30,8 @@ import flash.geom.*;
 import flash.utils.*;
 import flash.ui.*;
 import flash.text.*;
+import flash.media.*;
+import flash.net.*;
 
 //Import Papervision3D
 import org.papervision3d.core.proto.*;
@@ -72,7 +74,12 @@ class World extends BasicView
 	private var scoreobj_  : ScoreObject;
 	private var ui_        : UI;
 	private var emitter_   : Emitter;
-    
+	private var bgm_     : Sound;
+	private var bgmC_    : SoundChannel;
+	private var lonlon_  : Sound;
+	private var lonlonC_ : SoundChannel;
+	private var hitArray_: Array = new Array(); //contains Sound
+	
     //caches
     private var currentFrameProgressCache_ : Number = 0;
     private var currentFrameXCache_        : Number = 0;
@@ -100,11 +107,27 @@ class World extends BasicView
 		scoreobj_ = scoreobj;
 		ui_ = ui;
 		emitter_ = emitter;
+		loadSounds();
 		initBitmapMaterials();
         setup3D();
         setupEvents();
         //initSpawn();
     }
+	
+	private function loadSounds():void {
+		bgm_ = new Sound();
+		bgm_.load(new URLRequest("mp3/middleMusic.mp3"));
+		bgmC_ = bgm_.play();
+		lonlon_ = new Sound(new URLRequest("mp3/hoLonLon.mp3"));
+		lonlonC_ = lonlon_.play();
+		for( var i:uint = 1; i <= 4; ++i )
+			hitArray_.push(new Sound(new URLRequest("mp3/hit"+i+".mp3")));
+	}
+	
+	public function stopSounds():void {
+	    bgmC_.stop();
+		lonlonC_.stop();
+	}
 	
 	public function initBitmapMaterials():void {
 	    for( var i:uint = 0; i < houseVariations_ ; ++i )
@@ -281,7 +304,8 @@ class World extends BasicView
 		ui_.popUpItem(obj.screen.x, obj.screen.y, ch);
 		for( var i:uint = 0; i < 15; ++i )
 			emitter_.smoking(obj.screen.x, obj.screen.y + obj.material.bitmap.height/2);
-		
+			
+		hitArray_[uint_rand(4)].play();
 		
 		if( uint_rand(2) ) {
 			TweenMax.to(obj, 0.66, {y:"-400", ease:Back.easeIn, overwrite:false, 
