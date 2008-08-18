@@ -42,6 +42,7 @@ class Score extends Sprite
 	private var input_    : Input;
 	private var scoreobj_ : ScoreObject; 
 	private var finished_ : Boolean = false;
+	private var scoreboard_:MovieClip;
 	
 	//3D Related
 	
@@ -59,20 +60,22 @@ class Score extends Sprite
 	private function startTweeningTheListing():void {
 	    var d:uint = 0;		
 	    showTitle("SCORE", d);
-		showTotal(++d);
-	    showListing(scoreobj_.houses, "png/smallhouse.png", "房子", ++d);
-		showListing(scoreobj_.trees,  "png/smalltree.png", "樹木", ++d);
-		if( scoreobj_.score > 10 ) showImportant("jpg/people1.jpg", "阿嬤ㄟ虔誠", ++d);
-		if( scoreobj_.score > 20 ) showImportant("jpg/people2.jpg", "阿公ㄟ勤奮", ++d);
-		if( scoreobj_.score > 30 ) showImportant("jpg/people3.jpg", "阿伯ㄟ悠閒", ++d);
-		if( scoreobj_.score > 40 ) showImportant("jpg/people4.jpg", "阿姆ㄟ細心", ++d);
+		showListing(scoreobj_.trees,  "png/smalltree.png", "樹木", ++d, 315);
+	    showListing(scoreobj_.houses, "png/smallhouse.png", "房子", ++d, 275);
+		//showTotal(++d);
+		
+		var ClassRef: Class = Class(getDefinitionByName("Scoreboard"));
+		scoreboard_ = new ClassRef();
+		addChild( scoreboard_ );
+		TweenMax.from(scoreboard_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d+3});
 		
 		var show_text:String = "";
 		var file_name:String = "";
-		if( scoreobj_.score < 10 ) {
-			show_text = "你人真好，有空來坐坐";
+		if( scoreobj_.score < 1000 ) {
+			show_text = "你人真好。\n\nIt's good that you don't destruct too much.";
 			file_name = "jpg/good_ending.jpg";
 		} else {
+		    show_text = "在快速的開發背後，我們失去了什麼？\n\nHow many things do we destruct\nfor the sake of construction?"
 			file_name = "jpg/ending.jpg"
 		}
 		var ldr: Loader = new Loader();
@@ -80,56 +83,57 @@ class Score extends Sprite
 		ldr.x = 0; ldr.y = 25;
 		addChild( ldr );
 		++d;
-		var i: uint = d-4;
-		TweenMax.from(ldr, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*5});
+		var i: uint = d-1;
+		TweenMax.from(ldr, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*4});
 		
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
 		title.text = show_text;
-		title.x = 300;	title.y = 250;
+		title.x = 360;	title.y = 250;
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.CENTER;
 		//title.embedFonts = true;
-		TweenMax.from(title, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*5 + 2, 
+		TweenMax.from(title, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*4 + 1, 
 		    onComplete:function(){
 				addChild( title );
 				finished_ = true;
 			}});	
 	}
 	
-	private function showTitle(item_name:String, d:Number):void {
+	private function showTitle(item_name:String, d:Number, x:Number = 50):void {
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0, true);
 		title.text = item_name;
-		title.x = 50;	title.y = 30 + d * 60;
+		title.x = x;	title.y = 30 + d * 60;
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );
 		
 		var i:int = d-4; //watch out... can't use unsigned int here....
 		if( i >= 0 )
-			TweenMax.from(title, 1, {x:"-400", ease:Expo.easeOut, overwrite:false, delay:d + i*5});
+			TweenMax.from(title, 1, {x:"-800", ease:Expo.easeOut, overwrite:false, delay:d + i*4});
 		else
-			TweenMax.from(title, 1, {x:"-400", ease:Expo.easeOut, overwrite:false, delay:d});
+			TweenMax.from(title, 1, {x:"-800", ease:Expo.easeOut, overwrite:false, delay:d});
 	}
 	
-	private function showListing(n:uint, file_name:String, item_name:String, d:Number):void {
-	    showTitle(item_name, d);
+	private function showListing(n:uint, file_name:String, item_name:String, d:Number, x:Number):void {
+	    showTitle(item_name, d, 630);
 		
 		var ldr: Loader = new Loader();
 		ldr.load(new URLRequest(file_name));
-		ldr.x = 620; ldr.y = 30 + d * 60;
+		ldr.x = 40; ldr.y = 30 + d * 60;
+		ldr.scaleX = ldr.scaleY = 0.8;
 		addChild( ldr );
 		TweenMax.from(ldr, 1, {x:"-700", ease:Expo.easeOut, overwrite:false, delay:d});
 		
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0, true);
-		title.text = "x" + n;
-		title.x = 700;	title.y = 30 + d * 60;
+		title.text = n.toString();
+		title.x = x;	title.y = 30 + d * 60;
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );
-		TweenMax.from(title, 1, {x:"-800", ease:Expo.easeOut, overwrite:false, delay:d});
+		TweenMax.from(title, 1, {x:"-700", ease:Expo.easeOut, overwrite:false, delay:d});
 	}
 	
 	private function showImportant(file_name:String, item_name:String, d:Number):void {
@@ -139,17 +143,17 @@ class Score extends Sprite
 		ldr.load(new URLRequest(file_name));
 		ldr.x = 405; ldr.y = -10;
 		addChild( ldr );
-		TweenMax.from(ldr, 1, {alpha:0, ease:Linear.easeInOut, overwrite:false, delay:d + i*5});
-		TweenMax.to  (ldr, 1, {alpha:0, ease:Linear.easeInOut, overwrite:false, delay:d + i*5 + 4});
+		TweenMax.from(ldr, 1, {alpha:0, ease:Linear.easeInOut, overwrite:false, delay:d + i*4});
+		TweenMax.to  (ldr, 1, {alpha:0, ease:Linear.easeInOut, overwrite:false, delay:d + i*4 + 3});
 	}
 	
 	private function showTotal(d:Number):void {
-	    showTitle("開發程度", d);
+	    showTitle("總分", d);
 		
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0, true);
-		title.text = scoreobj_.score + " / " + 100;
-		title.x = 620;	title.y = 30 + d * 60;
+		title.text = scoreobj_.score.toString();
+		title.x = 650;	title.y = 30 + d * 60;
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );

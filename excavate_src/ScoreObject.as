@@ -25,11 +25,11 @@ package excavate_src {
 class ScoreObject {
     private var trees_  : uint = 0;
 	private var houses_ : uint = 0;
-	public function get score():Number { return trees_ * 2 + houses_; }
+	public function get score():Number { return trees_ + houses_; }
 	public function get trees():uint   { return trees_; }
 	public function get houses():uint  { return houses_; }
-	public function incTrees():void { ++trees_; }
-	public function incHouses():void { ++houses_; }
+	public function incTrees (i:uint):void { trees_  += i; }
+	public function incHouses(i:uint):void { houses_ += i; }
 }
 
 } //package

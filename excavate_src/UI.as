@@ -66,7 +66,7 @@ class UI extends Sprite
 		addChild( hint_ );
 		
 		progress_ = new TextField();
-		progress_.text = "0 / 100";
+		progress_.text = "樹木: 00000   房舍: 00000";
 		progress_.x = 350; progress_.y = 520;
 		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
 		progress_.setTextFormat(pform);
@@ -82,8 +82,8 @@ class UI extends Sprite
 		addChild( counter_ );
 	}
 	
-	public function updateProgress(percent: Number): void {
-	    progress_.text = percent + " / 100";
+	public function updateProgress(scoreobj: ScoreObject): void {
+	    progress_.text =  "樹木: " + uint_to_s(scoreobj.trees, 5) + "   房舍: " + uint_to_s(scoreobj.houses, 5);
 		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
 		progress_.setTextFormat(pform);
 	}
@@ -105,14 +105,14 @@ class UI extends Sprite
 	    addChild( hint_ );
 	}
 	
-	public function popUpItem(x:Number, y:Number, ch:String):void {
+	public function popUpItem(x:Number, y:Number, ch:String, val:uint):void {
 	    var item: TextField = new TextField();
 		if( ch == "h" )
-			item.text = "房子 +1";
+			item.text = "拆除房舍 +" + val.toString();
 		else if( ch == "t" )
-		    item.text = "樹木 +1";
+		    item.text = "拆除樹木 +" + val.toString();
 			
-		item.x = x + stage.width/2; item.y = y + stage.height/2;
+		item.x = x + stage.width/2 - 100; item.y = y + stage.height/2;
 		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
 		item.setTextFormat(pform);
 		item.autoSize = TextFieldAutoSize.CENTER;
@@ -125,6 +125,20 @@ class UI extends Sprite
 	}
 	
 	//Helpers
+	//Duplicate of World.uint_to_s
+	protected function uint_to_s(i:uint, digit:uint = 0):String {
+	    if( digit == 0 ) return i.toString();
+		else {
+		    var s:String = i.toString();
+			var lack_zero:uint = digit - s.length;
+			var zeros:String = "";
+			while( lack_zero > 0 ) {
+			    zeros += "0";
+				--lack_zero;
+			}
+			return zeros + s;
+		}
+	}
 }
 
 } //package

@@ -117,9 +117,9 @@ class World extends BasicView
 	private function loadSounds():void {
 		bgm_ = new Sound();
 		bgm_.load(new URLRequest("mp3/middleMusic.mp3"));
-		bgmC_ = bgm_.play();
+		bgmC_ = bgm_.play(0, 100);
 		lonlon_ = new Sound(new URLRequest("mp3/hoLonLon.mp3"));
-		lonlonC_ = lonlon_.play();
+		lonlonC_ = lonlon_.play(0, 100);
 		for( var i:uint = 1; i <= 4; ++i )
 			hitArray_.push(new Sound(new URLRequest("mp3/hit"+i+".mp3")));
 	}
@@ -194,10 +194,12 @@ class World extends BasicView
     private function spawnObjects():void {
         for( var i:uint = 0; i < objsPerSpawn_; ++i ) {
             //var o: Plane = new Plane(new ColorMaterial(rand(16777216)), 450, 300, 4, 4); //temp
-			var mat: BitmapFileMaterial = matArray_[uint_rand(houseVariations_ + treeVariations_)];
+			var type: uint = uint_rand(houseVariations_ + treeVariations_);
+			var val : uint = type % houseVariations_;
+			var mat : BitmapFileMaterial = matArray_[ type ];
 			var o: Plane = new Plane(mat, mat.bitmap.width/1.2, mat.bitmap.height/1.2, 1, 1);
 			
-            o.extra = {hp: 3, isDead: false, isDying: false}; 
+            o.extra = {value: val, isDead: false, isDying: false}; 
             o.autoCalcScreenCoords = true;
             
             //Magical formula....
@@ -270,16 +272,21 @@ class World extends BasicView
         scene.addChild( ground_ );
 		scene.addChild( ground2_ );
     }
+	
+	public function removeEvents():void {
+		input_.removeEventListener(PeakEvent.PEAK, hitEventHandler);
+	}
     
     private function setupEvents():void {
-        input_.addEventListener(PeakEvent.PEAK, 
-            function(){  
-                peakCount_ += 1;
-				ui_.arm.gotoAndStop(2);
-				TweenMax.to(ui_, 0.5, {onComplete:function(){ui_.arm.gotoAndStop(1);}});
-                hitReaction( findHitObject() );
-            } );
+        input_.addEventListener(PeakEvent.PEAK, hitEventHandler);
     }
+	
+	private function hitEventHandler(e:Event):void {
+		peakCount_ += 1;
+		ui_.arm.gotoAndStop(2);
+		TweenMax.to(ui_, 0.3, {onComplete:function(){ui_.arm.gotoAndStop(1);}});
+		hitReaction( findHitObject() );
+	}
     
     private function findHitObject():Plane/*DisplayObject3D*/ {
         var hitobj: Plane = null;
@@ -299,11 +306,16 @@ class World extends BasicView
 		//trace( (obj.material as BitmapMaterial).texture.toString().charAt(4) ); 
 		//Bad Magic: "png/t" or "png/h" ... the fourth character will be distinguishable
 		var ch : String = (obj.material as BitmapMaterial).texture.toString().charAt(4);
-		if( ch == "h" )
-			scoreobj_.incHouses();
-		else if ( ch == "t" )
-			scoreobj_.incTrees();
-		ui_.popUpItem(obj.screen.x, obj.screen.y, ch);
+		var val: uint = 0;
+		if( ch == "h" ) {
+		    val = (10 + uint_rand(obj.extra["value"]*2))*3;
+			scoreobj_.incHouses(val);
+		}
+		else if ( ch == "t" ) {
+			val = (15 + uint_rand(obj.extra["value"]*3))*10;
+			scoreobj_.incTrees(val);
+		}
+		ui_.popUpItem(obj.screen.x, obj.screen.y, ch, val);
 		for( var i:uint = 0; i < 15; ++i )
 			emitter_.smoking(obj.screen.x, obj.screen.y + obj.material.bitmap.height/2);
 			

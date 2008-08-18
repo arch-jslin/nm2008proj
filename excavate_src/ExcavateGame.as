@@ -66,20 +66,28 @@ public final class ExcavateGame extends Sprite
 		TweenMax.to  (intro_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:4, 
 			onComplete:function(){
 				changeSceneFrom1_to_2();
-				//showDebug();
-		        addEventListener( Event.ENTER_FRAME, mainLoop );
-				input_.addEventListener(PeakEvent.PEAK, 
-					function(){
-						if( score_ && endGame_ && score_.finished )
-							programRestart();
-						else if( !startGame_ ) {
-							gameStart();
-						}
-					});	
+				addEventListener( Event.ENTER_FRAME, mainLoop );
+				input_.addEventListener(PeakEvent.PEAK, gameStartHandler);
 		    }});
+			
+	    //showDebug();
     }
 	
+	private function gameStartHandler(e:Event):void {
+		if( !startGame_ )
+			gameStart();
+	}
+	
+	private function programRestartHandler(e:Event):void {
+		trace( score_ + " " + endGame_ + " " + (score_ ? score_.finished : " ") );
+		if( score_ && endGame_ && score_.finished ) 
+			programRestart();
+	}
+	
 	private function changeSceneFrom1_to_2():void {
+	    stage.quality   = StageQuality.LOW;
+	    removeChild( intro_ );
+		
 		ui_    =    new UI(input_);
 		scoreobj_ = new ScoreObject();
 		emitterLayer_ = new Emitter(input_);
@@ -95,7 +103,6 @@ public final class ExcavateGame extends Sprite
 	}
 	
 	private function programRestart():void {
-	    removeChild( intro_ );
 		removeChild( score_ );
 		
 		startGame_ = false;
@@ -109,7 +116,11 @@ public final class ExcavateGame extends Sprite
 			onComplete:function(){
 				changeSceneFrom1_to_2();
 				world_.initSpawn(); //I know this is bad, but since we have to do it here. Because all bitmap are already loaded.
+				addEventListener( Event.ENTER_FRAME, mainLoop );
+				input_.addEventListener(PeakEvent.PEAK, gameStartHandler);
 		    }});
+			
+		input_.removeEventListener(PeakEvent.PEAK, programRestartHandler);
 	}
 
 	private function gameStart():void {
@@ -118,6 +129,8 @@ public final class ExcavateGame extends Sprite
 		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
 		timer_.start();
 		ui_.hideHint();
+		
+		input_.removeEventListener(PeakEvent.PEAK, gameStartHandler);
 	}
     
     private function mainLoop(e:Event):void {
@@ -126,7 +139,7 @@ public final class ExcavateGame extends Sprite
 			world_.pseudo_update();
 		else if( startGame_ && !endGame_ ) {
 		    world_.update();
-			ui_.updateProgress( scoreobj_.score );
+			ui_.updateProgress( scoreobj_ );
 		}
     }
 	
@@ -138,14 +151,19 @@ public final class ExcavateGame extends Sprite
 		    ui_.showHint( "Time's Up!" );
 		    endGame_ = true;
 			world_.stopSounds();
+			removeEventListener( Event.ENTER_FRAME, mainLoop );
+			world_.removeEvents();
 			TweenMax.to(world_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay: 2, 
 			    onComplete:function(){
+				    stage.quality   = StageQuality.HIGH;
 					removeChild( world_ );
 					removeChild( ui_ );
 					removeChild( emitterLayer_ );
 					score_ = new Score(input_, scoreobj_);
 					addChild( score_ );
 					TweenMax.from( score_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false});
+					
+					input_.addEventListener(PeakEvent.PEAK, programRestartHandler);
 				}});
 		}
 	}
