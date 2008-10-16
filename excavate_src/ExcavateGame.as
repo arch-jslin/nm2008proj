@@ -124,6 +124,7 @@ public final class ExcavateGame extends Sprite
 	}
 
 	private function gameStart():void {
+        if( !world_.inited ) return;
 	    startGame_ = true;
 		timer_ = new Timer(1000, 60);
 		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
@@ -148,7 +149,7 @@ public final class ExcavateGame extends Sprite
 		ui_.showCounter( timecounter_ );
 	    //trace( timecounter_ + " " + scoreobj_.houses + " " + scoreobj_.trees );
 		if( timecounter_ == 0 ) {
-		    ui_.showHint( "Time's Up!" );
+		    ui_.showHint( "時間到!" );
 		    endGame_ = true;
 			world_.stopSounds();
 			removeEventListener( Event.ENTER_FRAME, mainLoop );

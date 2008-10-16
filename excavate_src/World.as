@@ -99,6 +99,7 @@ class World extends BasicView
     public function get peakCount():uint { return peakCount_; }
     public function get progress():Number{ return progress_; }
     public function get nextSpawnP():Number{ return nextSpawnP_; }
+    public function get inited():Boolean{ return inited_; }
     
     //methods
     public function World(input: Input, scoreobj: ScoreObject, ui: UI, emitter: Emitter):void {
@@ -118,6 +119,16 @@ class World extends BasicView
 		bgm_ = new Sound();
 		bgm_.load(new URLRequest("mp3/middleMusic.mp3"));
 		bgmC_ = bgm_.play(0, 100);
+        
+        /* this can cause sound to fade in/out, though very stupid. */
+        var sT:SoundTransform = bgmC_.soundTransform; sT.volume = 0; bgmC_.soundTransform = sT;
+        TweenMax.to(sT, 3, {volume:0, ease:Linear.easeOut, onUpdate:function(){         
+            var sT:SoundTransform = bgmC_.soundTransform;
+            sT.volume += 0.02;
+            trace( sT.volume );
+            bgmC_.soundTransform = sT; }
+        });
+        
 		lonlon_ = new Sound(new URLRequest("mp3/hoLonLon.mp3"));
 		lonlonC_ = lonlon_.play(0, 100);
 		for( var i:uint = 1; i <= 4; ++i )
