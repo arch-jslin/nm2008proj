@@ -17,8 +17,8 @@ function write_score_to_ranks($rank_str) {
     }
 }
 
-//write_score_to_ranks($_POST['obfuscated_name']);
-write_score_to_ranks($_GET['obfuscated_name']);  //use this when manual testing with broswer
+write_score_to_ranks($_POST['obfuscated_name']);
+//write_score_to_ranks($_GET['obfuscated_name']);  //use this when manual testing with broswer
 //write_score_to_ranks('1|2|3|4|5|6|7|8|9|10');  //use this when manual testing locally
 
 ?>
