@@ -71,8 +71,8 @@ class Score extends Sprite
 		
 		var show_text:String = "";
 		var file_name:String = "";
-		if( scoreobj_.score < 1000 ) {
-			show_text = "你人真好。\n\nIt's good that you don't destruct too much.";
+		if( scoreobj_.score < 1 ) {
+			show_text = "你人真好。\n\nYou're so kind.";
 			file_name = "jpg/good_ending.jpg";
 		} else {
 		    show_text = "在快速的開發背後，我們失去了什麼？\n\nHow many things do we destruct\nfor the sake of construction?"
