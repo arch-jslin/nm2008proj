@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2008 Johnson Lin (a.k.a arch.jslin)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -79,6 +79,9 @@ class World extends BasicView
 	private var lonlon_  : Sound;
 	private var lonlonC_ : SoundChannel;
 	private var hitArray_: Array = new Array(); //contains Sound
+    
+    //File IO 
+    private var loadedMaterials_ : uint = 0;
 	
     //caches
     private var currentFrameProgressCache_ : Number = 0;
@@ -120,12 +123,11 @@ class World extends BasicView
 		bgm_.load(new URLRequest("mp3/middleMusic.mp3"));
 		bgmC_ = bgm_.play(0, 100);
         
-        /* this can cause sound to fade in/out, though very stupid. */
-        var sT:SoundTransform = bgmC_.soundTransform; sT.volume = 0; bgmC_.soundTransform = sT;
-        TweenMax.to(sT, 3, {volume:0, ease:Linear.easeOut, onUpdate:function(){         
-            var sT:SoundTransform = bgmC_.soundTransform;
-            sT.volume += 0.02;
-            trace( sT.volume );
+        /* this can cause sound to fade in/out, though quite stupid. */
+        var sT:SoundTransform = bgmC_.soundTransform; 
+        sT.volume = 0; 
+        bgmC_.soundTransform = sT;
+        TweenMax.to(sT, 3, {volume:1, ease:Linear.easeOut, onUpdate:function(){ 
             bgmC_.soundTransform = sT; }
         });
         
@@ -146,9 +148,21 @@ class World extends BasicView
 			
 		for( var i:uint = 0; i < treeVariations_ ; ++i )
 		    matArray_.push( new BitmapFileMaterial("png/tree"+uint_to_s(i,2)+".png") );
+            
+        for each( var mat in matArray_ ) 
+            mat.addEventListener( FileLoadEvent.LOAD_COMPLETE, materialLoadedSignify );
 			
 	    BitmapFileMaterial.callback = initSpawn;
 	}
+    
+    private function materialLoadedSignify(e:FileLoadEvent):void {
+        var loading_str: String = (++loadedMaterials_) + "/" + (treeVariations_ + houseVariations_);
+        trace( loading_str );
+        if( loadedMaterials_ < treeVariations_ + houseVariations_ ) 
+            ui_.showHint( "--- 載入中 ---\r--- " + loading_str + " ---" );
+        else
+            ui_.showHint( "請按空白鍵來開始遊戲" );
+    }
     
     public function update():void {
         isBlockedCache_            = isBlocked();
@@ -323,7 +337,7 @@ class World extends BasicView
 			scoreobj_.incHouses(val);
 		}
 		else if ( ch == "t" ) {
-			val = (15 + uint_rand(obj.extra["value"]*3))*10;
+			val = (15 + uint_rand(obj.extra["value"]*3))*5;
 			scoreobj_.incTrees(val);
 		}
 		ui_.popUpItem(obj.screen.x, obj.screen.y, ch, val);

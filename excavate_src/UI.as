@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2008 Johnson Lin (a.k.a arch.jslin)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -56,54 +56,31 @@ class UI extends Sprite
 		arm_.x = 400;
 		arm_.y = 700;
 		addChild( arm_ );
-		
-		hint_  = new TextField();
-		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
-		hint_.text = "甩動 Wii 搖桿以開始遊戲";
-		hint_.x = 320;	hint_.y = 280;
-		hint_.setTextFormat(tform);
-		hint_.autoSize = TextFieldAutoSize.CENTER;
-		addChild( hint_ );
-		
-		progress_ = new TextField();
-		progress_.text = "樹木: 00000   房舍: 00000";
-		progress_.x = 350; progress_.y = 520;
-		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
-		progress_.setTextFormat(pform);
-		progress_.autoSize = TextFieldAutoSize.CENTER;
-		addChild( progress_ );
-		
-		counter_ = new TextField();
-		counter_.text = "60";
-		counter_.x = 350; counter_.y = 40;
-		var cform: TextFormat = new TextFormat("SimHei", 40, 0xffffff, true);
-		counter_.setTextFormat(cform);
-		counter_.autoSize = TextFieldAutoSize.CENTER;
-		addChild( counter_ );
+        
+        hint_     = createTextBox("--- 載入中 ---\r--- 請稍待 ---", 30, 350, 280);
+        progress_ = createTextBox("樹木: 00000   房舍: 00000", 30, 350, 520);
+        counter_  = createTextBox("60", 40, 350, 40);
 	}
+    
+    private function createTextBox(text:String, size:uint, x:int, y:int): TextField {
+        var textbox: TextField = new TextField();
+        var format: TextFormat = new TextFormat("SimHei", size, 0xffffff, true);
+        format.align = TextFormatAlign.CENTER;
+        textbox.defaultTextFormat = format;
+        textbox.text = text;
+        textbox.x = x; textbox.y = y;        
+        textbox.autoSize = TextFieldAutoSize.CENTER;
+        addChild( textbox );
+        return textbox;
+    }
 	
 	public function updateProgress(scoreobj: ScoreObject): void {
 	    progress_.text =  "樹木: " + uint_to_s(scoreobj.trees, 5) + "   房舍: " + uint_to_s(scoreobj.houses, 5);
-		var pform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
-		progress_.setTextFormat(pform);
 	}
 	
-	public function showCounter(count: uint): void {
-		counter_.text = count.toString();
-		var cform: TextFormat = new TextFormat("SimHei", 40, 0xffffff, true);
-		counter_.setTextFormat(cform);
-	}
-	
-	public function hideHint():void {
-		removeChild( hint_ );
-	}
-	
-	public function showHint(t:String):void {
-	    hint_.text = t;
-		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
-		hint_.setTextFormat( tform );
-	    addChild( hint_ );
-	}
+	public function showCounter(count: uint): void { counter_.text = count.toString(); }
+	public function hideHint():void { hint_.visible = false; }
+	public function showHint(t:String):void { hint_.text = t; hint_.visible = true; }
 	
 	public function popUpItem(x:Number, y:Number, ch:String, val:uint):void {
 	    var item: TextField = new TextField();
