@@ -52,7 +52,7 @@ public final class ExcavateGame extends Sprite
 	private var startGame_     : Boolean = false;
 	private var endGame_       : Boolean = false;
 	private var timer_         : Timer;
-    private var max_time_      : uint = 10;
+    private var max_time_      : uint = 45;
 	private var timecounter_   : uint = max_time_;
     
     //Methods
