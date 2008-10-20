@@ -78,7 +78,8 @@ class UI extends Sprite
 	    progress_.text =  "樹木: " + uint_to_s(scoreobj.trees, 5) + "   房舍: " + uint_to_s(scoreobj.houses, 5);
 	}
 	
-	public function showCounter(count: uint): void { counter_.text = count.toString(); }
+    public function hideCounter(): void { counter_.visible = false; }
+	public function showCounter(count: uint): void { counter_.text = count.toString(); counter_.visible = true; }
 	public function hideHint():void { hint_.visible = false; }
 	public function showHint(t:String):void { hint_.text = t; hint_.visible = true; }
 	

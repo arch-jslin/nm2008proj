@@ -31,6 +31,7 @@ import flash.utils.*;
 import flash.ui.*;
 import flash.text.*;
 import flash.net.*;
+import flash.media.*;
 
 //Import TweenMaxAS3
 import gs.TweenMax;
@@ -43,6 +44,11 @@ class Score extends Sprite
 	private var scoreobj_ : ScoreObject; 
 	private var finished_ : Boolean = false;
 	private var scoreboard_:MovieClip;
+    
+    private var bg_ : Sprite = new Sprite();
+    
+    private var bgm_  : Sound;
+    private var bgmC_ : SoundChannel;
 	
 	//3D Related
 	
@@ -54,20 +60,38 @@ class Score extends Sprite
 	    input_ = input;
 		scoreobj_ = scoreobj;
 		trace( scoreobj_.score );
+        addChild( bg_ );
+        loadSounds();
 		startTweeningTheListing();
 	}
+    
+    private function loadSounds():void {
+		bgm_ = new Sound();
+		bgm_.load(new URLRequest("mp3/endMusic.mp3"));
+		bgmC_ = bgm_.play(0, 1);
+        
+        /* this can cause sound to fade in/out, though quite stupid. */
+        var sT:SoundTransform = bgmC_.soundTransform; 
+        sT.volume = 0; 
+        bgmC_.soundTransform = sT;
+        TweenMax.to(sT, 3, {delay: 1, volume:1, ease:Linear.easeOut, onUpdate:function(){ 
+            bgmC_.soundTransform = sT; }
+        });
+    }
+    
+    public function stopSounds():void { bgmC_.stop(); }
 	
 	private function startTweeningTheListing():void {
 	    var d:uint = 0;		
 	    showTitle("SCORE", d);
 		showListing(scoreobj_.trees,  "png/smalltree.png", "樹木", ++d, 315);
 	    showListing(scoreobj_.houses, "png/smallhouse.png", "房子", ++d, 275);
-		//showTotal(++d);
+        showTotal((++d)+4);
 		
 		var ClassRef: Class = Class(getDefinitionByName("Scoreboard"));
 		scoreboard_ = new ClassRef();
 		addChild( scoreboard_ );
-		TweenMax.from(scoreboard_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d+3});
+		TweenMax.from(scoreboard_, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d+5});
 		
 		var show_text:String = "";
 		var file_name:String = "";
@@ -83,8 +107,7 @@ class Score extends Sprite
 		ldr.x = 0; ldr.y = 25;
 		addChild( ldr );
 		++d;
-		var i: uint = d-1;
-		TweenMax.from(ldr, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*4});
+		TweenMax.from(ldr, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + 8});
 		
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
@@ -93,7 +116,7 @@ class Score extends Sprite
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.CENTER;
 		//title.embedFonts = true;
-		TweenMax.from(title, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + i*4 + 1, 
+		TweenMax.from(title, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + 9, 
 		    onComplete:function(){
 				addChild( title );
 				finished_ = true;
@@ -108,12 +131,8 @@ class Score extends Sprite
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );
-		
-		var i:int = d-4; //watch out... can't use unsigned int here....
-		if( i >= 0 )
-			TweenMax.from(title, 1, {x:"-800", ease:Expo.easeOut, overwrite:false, delay:d + i*4});
-		else
-			TweenMax.from(title, 1, {x:"-800", ease:Expo.easeOut, overwrite:false, delay:d});
+        
+		TweenMax.from(title, 1, {x:"-800", ease:Expo.easeOut, overwrite:false, delay:d});
 	}
 	
 	private function showListing(n:uint, file_name:String, item_name:String, d:Number, x:Number):void {
@@ -128,13 +147,40 @@ class Score extends Sprite
 		
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0, true);
-		title.text = n.toString();
+        title.defaultTextFormat = tform;
+		title.text = "0"; //n.toString();
 		title.x = x;	title.y = 30 + d * 60;
-		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );
 		TweenMax.from(title, 1, {x:"-700", ease:Expo.easeOut, overwrite:false, delay:d});
+        
+        //make a counter effect
+        var effect_dur:int = 5;
+        var increment:Number = Number(n)/(effect_dur*30); 
+        var val:Number = 0;
+        var last_val:Number = 0;
+        TweenMax.from(this, effect_dur, {overwrite:false, delay:d-1,
+                      onUpdate:function(){ 
+                          val += increment; title.text = int(val).toString(); 
+                          if( val - last_val >= 100 ) {
+                              last_val = val;
+                              dropItem( item_name );
+                          }
+                      }, 
+                      onComplete:function(){ title.text = n.toString();} });
 	}
+    
+    private function dropItem(s: String):void {
+		var ldr: Loader = new Loader();
+        var name: String = (s == "樹木" ? "tree" : "house");
+        var max: uint = (s == "樹木" ? 5 : 9);
+		ldr.load(new URLRequest("png/"+name+uint_to_s(uint_rand(max),2)+".png"));
+        bg_.addChild( ldr );
+        ldr.x = rand(800); ldr.y = -100; ldr.rotation = rand2(180);
+    	TweenMax.from(ldr, 2.5, {alpha:0.3, ease:Linear.easeOut, overwrite:false});
+        TweenMax.to(ldr, 3.5, {y:"1050", ease:Linear.easeOut, overwrite:false});
+        TweenMax.to(ldr, 2.5, {rotation:rand2(180).toString(), ease:Linear.easeOut, overwrite:false});
+    }
 	
 	private function showImportant(file_name:String, item_name:String, d:Number):void {
 		showTitle(item_name, d);
@@ -153,7 +199,7 @@ class Score extends Sprite
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0, true);
 		title.text = scoreobj_.score.toString();
-		title.x = 650;	title.y = 30 + d * 60;
+		title.x = 150;	title.y = 30 + d * 60;
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );
@@ -161,6 +207,23 @@ class Score extends Sprite
 	}
 	
 	//Helpers
+    
+	protected function rand(i:Number):Number  { return Math.random()*i; }
+	protected function uint_rand(i:uint):uint { return rand(i); }
+	protected function rand2(i:Number):Number { return rand(i)*2 - i; }
+	protected function uint_to_s(i:uint, digit:uint = 0):String {
+	    if( digit == 0 ) return i.toString();
+		else {
+		    var s:String = i.toString();
+			var lack_zero:uint = digit - s.length;
+			var zeros:String = "";
+			while( lack_zero > 0 ) {
+			    zeros += "0";
+				--lack_zero;
+			}
+			return zeros + s;
+		}
+	}
 }
 
 } //package

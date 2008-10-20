@@ -52,7 +52,8 @@ public final class ExcavateGame extends Sprite
 	private var startGame_     : Boolean = false;
 	private var endGame_       : Boolean = false;
 	private var timer_         : Timer;
-	private var timecounter_   : uint = 60;
+    private var max_time_      : uint = 10;
+	private var timecounter_   : uint = max_time_;
     
     //Methods
     public function ExcavateGame() {
@@ -96,6 +97,7 @@ public final class ExcavateGame extends Sprite
         addChild(world_);
 		addChild(emitterLayer_);
 		addChild(ui_);
+        ui_.showCounter( timecounter_ );
 	}
 	
 	private function changeSceneFrom2_to_3():void {
@@ -104,10 +106,10 @@ public final class ExcavateGame extends Sprite
 	
 	private function programRestart():void {
 		removeChild( score_ );
-		
+		score_.stopSounds();
 		startGame_ = false;
 		endGame_   = false;
-		timecounter_ = 60;
+		timecounter_ = max_time_;
 		
 		intro_ =    new Intro(input_);
 		addChild(intro_);
@@ -126,7 +128,7 @@ public final class ExcavateGame extends Sprite
 	private function gameStart():void {
         if( !world_.inited ) return;
 	    startGame_ = true;
-		timer_ = new Timer(1000, 60);
+		timer_ = new Timer(1000, max_time_);
 		timer_.addEventListener(TimerEvent.TIMER, timerHandler);
 		timer_.start();
 		ui_.hideHint();
@@ -150,6 +152,7 @@ public final class ExcavateGame extends Sprite
 	    //trace( timecounter_ + " " + scoreobj_.houses + " " + scoreobj_.trees );
 		if( timecounter_ == 0 ) {
 		    ui_.showHint( "時間到!" );
+            timer_.stop();
 		    endGame_ = true;
 			world_.stopSounds();
 			removeEventListener( Event.ENTER_FRAME, mainLoop );

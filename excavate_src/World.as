@@ -92,7 +92,7 @@ class World extends BasicView
     //3D Related
 	private var sight_     : DisplayObject3D = new DisplayObject3D();
     private var blocker_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial()}), 400, 1, 300, 1, 1, 1);
-    private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 200, 1, 1, 1);
+    private var hitarea_   : Cube            = new Cube(new MaterialsList({all:new WireframeMaterial(0)}), 10, 1, 10, 1, 1, 1);
 	private var sky_       : Plane           = new Plane(new BitmapFileMaterial("jpg/sky.jpg"), 8000, 3000, 1, 1);
     private var ground_    : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1350, 1, 1);
 	private var ground2_   : Plane           = new Plane(new BitmapFileMaterial("png/ground_bigger.png"), 9000, 1350, 1, 1);
@@ -339,11 +339,11 @@ class World extends BasicView
 		var ch : String = (obj.material as BitmapMaterial).texture.toString().charAt(4);
 		var val: uint = 0;
 		if( ch == "h" ) {
-		    val = (10 + uint_rand(obj.extra["value"]*2))*3;
+		    val = (10 + obj.extra["value"]*2)*3;
 			scoreobj_.incHouses(val);
 		}
 		else if ( ch == "t" ) {
-			val = (15 + uint_rand(obj.extra["value"]*3))*5;
+			val = (5 + obj.extra["value"]*4)*5;
 			scoreobj_.incTrees(val);
 		}
 		ui_.popUpItem(obj.screen.x, obj.screen.y, ch, val);
