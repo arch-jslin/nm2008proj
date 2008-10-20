@@ -79,9 +79,10 @@ class World extends BasicView
 	private var lonlon_  : Sound;
 	private var lonlonC_ : SoundChannel;
 	private var hitArray_: Array = new Array(); //contains Sound
+    private var coolingDown_ : Boolean = false;
     
     //File IO 
-    private var loadedMaterials_ : uint = 0;
+    static private var loadedMaterials_ : uint = 0;
 	
     //caches
     private var currentFrameProgressCache_ : Number = 0;
@@ -111,7 +112,6 @@ class World extends BasicView
 		scoreobj_ = scoreobj;
 		ui_ = ui;
 		emitter_ = emitter;
-		loadSounds();
 		initBitmapMaterials();
         setup3D();
         setupEvents();
@@ -157,11 +157,7 @@ class World extends BasicView
     
     private function materialLoadedSignify(e:FileLoadEvent):void {
         var loading_str: String = (++loadedMaterials_) + "/" + (treeVariations_ + houseVariations_);
-        trace( loading_str );
-        if( loadedMaterials_ < treeVariations_ + houseVariations_ ) 
-            ui_.showHint( "--- 載入中 ---\r--- " + loading_str + " ---" );
-        else
-            ui_.showHint( "請按空白鍵來開始遊戲" );
+        ui_.showHint( "--- 載入中 ---\r--- " + loading_str + " ---" );
     }
     
     public function update():void {
@@ -222,7 +218,7 @@ class World extends BasicView
 			var type: uint = uint_rand(houseVariations_ + treeVariations_);
 			var val : uint = type % houseVariations_;
 			var mat : BitmapFileMaterial = matArray_[ type ];
-			var o: Plane = new Plane(mat, mat.bitmap.width/1.2, mat.bitmap.height/1.2, 1, 1);
+			var o: Plane = new Plane(mat, mat.bitmap.width*1.8, mat.bitmap.height*1.8, 1, 1);
 			
             o.extra = {value: val, isDead: false, isDying: false}; 
             o.autoCalcScreenCoords = true;
@@ -232,11 +228,15 @@ class World extends BasicView
 			o.x = ( 2*i - objsPerSpawn_ ) * xInterval_ * 0.4 + rand(xInterval_)*0.8 + camera.x;
             
             o.z = objZStart_ + i*2; //i is a little bias to avoid z-fighting
-            o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (300 - o.material.bitmap.height);
+            o.y = calculate_Height_From_X_and_Z_Adjustment(o);
             o.rotationZ = calculate_Slope_By_X_Pos(o.x);//rand2(20);
             objArray_.push( o );
             scene.addChild( o );
         }
+    }
+    
+    private function calculate_Height_From_X_and_Z_Adjustment(o: Plane):Number {
+        return convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (175 - o.material.bitmap.height*0.9);
     }
     
     public function initSpawn():void {
@@ -248,13 +248,16 @@ class World extends BasicView
                 objArray_[j + (i*objsPerSpawn_)].z -= len * (1 - (i+1)/times); //Magical Indexes..
         }
 		inited_ = true;
+        
+        loadSounds(); //only load sounds in game world when inited.
+        ui_.showHint( "A鍵：左移\rD鍵：右移\rW鍵：前進\r　空白鍵：怪手開挖\r\r請按空白鍵來開始遊戲\r" );
     }
     
     private function updateObjPositions():void {
         for each( var o in objArray_ ) {
             o.z -= currentFrameProgressCache_;
             if( !o.extra["isDying"] )
-                o.y = convert_X_2_Height(o.x) + convert_Z_2_Height(o.z) - (350 - o.material.bitmap.height);
+                o.y = calculate_Height_From_X_and_Z_Adjustment(o);
         }
         camera.x += currentFrameXCache_;
         sight_.x += currentFrameXCache_;
@@ -307,9 +310,12 @@ class World extends BasicView
     }
 	
 	private function hitEventHandler(e:Event):void {
+        if( !inited_ || coolingDown_ ) return;
+        coolingDown_ = true;
 		peakCount_ += 1;
 		ui_.arm.gotoAndStop(2);
 		TweenMax.to(ui_, 0.3, {onComplete:function(){ui_.arm.gotoAndStop(1);}});
+        TweenMax.to(this, 0.5, {onComplete:function(){ coolingDown_ = false; }});
 		hitReaction( findHitObject() );
 	}
     

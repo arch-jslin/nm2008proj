@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2008 Johnson Lin (a.k.a arch.jslin)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -72,10 +72,10 @@ class Score extends Sprite
 		var show_text:String = "";
 		var file_name:String = "";
 		if( scoreobj_.score < 1 ) {
-			show_text = "你人真好。\n\nYou're so kind.";
+			show_text = "你人真好。\n\nYou're so kind.\r\r\r（按空白鍵重新開始）";
 			file_name = "jpg/good_ending.jpg";
 		} else {
-		    show_text = "在快速的開發背後，我們失去了什麼？\n\nHow many things do we destruct\nfor the sake of construction?"
+		    show_text = "在快速的開發背後，我們失去了什麼？\n\nHow many things do we destruct\nfor the sake of construction?\r\r\r（按空白鍵重新開始）"
 			file_name = "jpg/ending.jpg"
 		}
 		var ldr: Loader = new Loader();

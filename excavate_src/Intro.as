@@ -30,6 +30,8 @@ import flash.geom.*;
 import flash.utils.*;
 import flash.ui.*;
 import flash.text.*;
+import flash.media.*;
+import flash.net.*;
 
 //Import TweenMaxAS3
 import gs.TweenMax;
@@ -40,6 +42,8 @@ class Intro extends Sprite
 	//Internal Properties
 	private var input_      : Input;
 	private var intro_text_ : MovieClip;
+    private var bgm_  : Sound;
+    private var bgmC_ : SoundChannel;
 	
 	//3D Related
 	
@@ -53,7 +57,23 @@ class Intro extends Sprite
 		intro_text_.x = 400;
 		intro_text_.y = 300;
 		addChild( intro_text_ );
+        
+        loadSounds();
 	}
+    
+    private function loadSounds():void {
+		bgm_ = new Sound();
+		bgm_.load(new URLRequest("mp3/startMusic.mp3"));
+		bgmC_ = bgm_.play(0, 1);
+        
+        /* this can cause sound to fade in/out, though quite stupid. */
+        var sT:SoundTransform = bgmC_.soundTransform; 
+        sT.volume = 1; 
+        bgmC_.soundTransform = sT;
+        TweenMax.to(sT, 2, {delay: 5, volume:0, ease:Linear.easeOut, onUpdate:function(){ 
+            bgmC_.soundTransform = sT; }
+        });
+    }
 }
 
 } //package
