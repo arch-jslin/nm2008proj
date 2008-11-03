@@ -84,8 +84,8 @@ class Score extends Sprite
 	private function startTweeningTheListing():void {
 	    var d:uint = 0;		
 	    showTitle("SCORE", d);
-		showListing(scoreobj_.trees,  "png/smalltree.png", "樹木", ++d, 315);
-	    showListing(scoreobj_.houses, "png/smallhouse.png", "房子", ++d, 275);
+		showListing(scoreobj_.trees,  "png/smalltree.png", "樹木", ++d, 310);
+	    showListing(scoreobj_.houses, "png/smallhouse.png", "房子", ++d, 270);
         showTotal((++d)+4);
 		
 		var ClassRef: Class = Class(getDefinitionByName("Scoreboard"));
@@ -99,7 +99,7 @@ class Score extends Sprite
 			show_text = "你人真好。\n\nYou're so kind.\r\r\r（按空白鍵重新開始）";
 			file_name = "jpg/good_ending.jpg";
 		} else {
-		    show_text = "在快速的開發背後，我們失去了什麼？\n\nHow many things do we destruct\nfor the sake of construction?\r\r\r（按空白鍵重新開始）"
+		    show_text = "在快速的開發背後，我們失去了什麼？\n\nHow many things do we destruct\nfor the sake of construction?\r\r（按空白鍵重新開始）"
 			file_name = "jpg/ending.jpg"
 		}
 		var ldr: Loader = new Loader();
@@ -112,13 +112,22 @@ class Score extends Sprite
 		var title: TextField = new TextField();
 		var tform: TextFormat = new TextFormat("SimHei", 30, 0xffffff, true);
 		title.text = show_text;
-		title.x = 360;	title.y = 250;
+		title.x = 360;	title.y = 230;
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.CENTER;
-		//title.embedFonts = true;
+
+        var link: TextField = new TextField();
+        var lform: TextFormat = new TextFormat("SimHei", 20, 0xffffff, true);
+        lform.url = "http://blog.yam.com/yetank";
+        link.htmlText = "Made by YET 青年環境智庫（連結點我）";
+        link.x = 680; link.y = 500;
+        link.setTextFormat(lform);
+        link.autoSize = TextFieldAutoSize.RIGHT;
+        
 		TweenMax.from(title, 1, {alpha:0, ease:Linear.easeOut, overwrite:false, delay:d + 9, 
 		    onComplete:function(){
 				addChild( title );
+                addChild( link );
 				finished_ = true;
 			}});	
 	}
@@ -146,10 +155,10 @@ class Score extends Sprite
 		TweenMax.from(ldr, 1, {x:"-700", ease:Expo.easeOut, overwrite:false, delay:d});
 		
 		var title: TextField = new TextField();
-		var tform: TextFormat = new TextFormat("SimHei", 30, 0, true);
+		var tform: TextFormat = new TextFormat("SimHei", 40, 0, true);
         title.defaultTextFormat = tform;
 		title.text = "0"; //n.toString();
-		title.x = x;	title.y = 30 + d * 60;
+		title.x = x;	title.y = 25 + d * 60;
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );
 		TweenMax.from(title, 1, {x:"-700", ease:Expo.easeOut, overwrite:false, delay:d});
@@ -197,9 +206,9 @@ class Score extends Sprite
 	    showTitle("總分", d);
 		
 		var title: TextField = new TextField();
-		var tform: TextFormat = new TextFormat("SimHei", 30, 0, true);
+		var tform: TextFormat = new TextFormat("SimHei", 40, 0, true);
 		title.text = scoreobj_.score.toString();
-		title.x = 150;	title.y = 30 + d * 60;
+		title.x = 160;	title.y = 30 + d * 60;
 		title.setTextFormat(tform);
 		title.autoSize = TextFieldAutoSize.LEFT;
 		addChild( title );
